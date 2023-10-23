@@ -1,0 +1,35 @@
+#ifndef __MERGE_HPP__
+#define __MERGE_HPP__
+
+//Algoritmo para MEZCLAR las listas divididas
+//2°) MEZCLAR dos conjuntos de elementos, uniendolos en un tercer arreglo pero ordenado 
+
+void Merge(int* A1, int* A2, int* A, int n) {
+	int i = 0, j = 0, k = 0;
+	//i: indice del arreglo de la izquierdo A1
+	//j: indice del arreglo de la derecha A2
+	//k: indice del arreglo mezcla A (A es union de A1 y A2, ordenado)	
+	int mitad = n / 2;
+	while (i < mitad && j < n - mitad) { //mientras i,j son menores a la mitad
+		if (A1[i] < A2[j]) {	//Si (izquierda < derecha)
+			A[k] = A1[i];		//colocamos el elemento de la izquierda(i) en el arreglo A
+			i++; k++;			//Avanzamos los indices i y k
+		}
+		else {				//Si (izquierda >= derecha)
+			A[k] = A2[j];	//colocamos el elemento de la derecha(j) en el arreglo A
+			j++; k++;		//Avanzamos los indices i y k
+		}
+	}
+
+	//Si aun quedan indices por recorrer, en alguno de los arreglos:
+	while (i < mitad) {		//Izquierda, completamos los demas elementos en A
+		A[k] = A1[i];
+		i++; k++;
+	}
+	while (j < n - mitad) {	//Derecha,   completamos los demas elementos en A
+		A[k] = A2[j];
+		j++; k++;
+	}
+}
+
+#endif

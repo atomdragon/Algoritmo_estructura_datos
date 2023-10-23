@@ -1,0 +1,32 @@
+#include <iostream>
+#include <conio.h>
+
+using namespace std;
+
+struct Nodo
+{
+	int dato;
+	Nodo *sig;
+};
+
+
+int main()
+{
+	Nodo* ini;
+
+	Nodo* uno = new Nodo(); uno->dato = 1;
+	Nodo* dos = new Nodo(); dos->dato = 2;
+	Nodo* tres = new Nodo(); tres->dato = 3;
+
+	ini = uno;
+	uno->sig = dos;
+	dos->sig = tres;
+	tres->sig = NULL;
+
+	cout << ini->dato << " " << ini->sig->dato << " " << ini->sig->sig->dato << endl;
+
+
+
+	_getch();
+	return 0;
+}

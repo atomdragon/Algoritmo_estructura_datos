@@ -1,0 +1,184 @@
+#include <iostream>
+#include <conio.h>
+#include <functional>
+#include <string>
+#include "ListaSimple.h"
+
+using namespace std;
+
+void agregarNodo(ListaSimple<int, string>* lst)
+{
+    system("cls");
+    cout << "======= ::Agregar Elemento:: =======" << endl;
+    string _nombre;
+    string _direccion;
+    int _telefono;
+    int _edad;
+    int _numero;   //numero de 6 digitos   
+    //cout << "\tNombre: ";
+	cin.clear();
+    cin.ignore();
+	cout << "\tNombre: ";
+	getline(cin, _nombre);
+    cout << "\tDireccion: ";
+    getline(cin, _direccion);
+    cout << "\tTelefono: "; cin >> _telefono;
+    cout << "\tEdad: "; cin >> _edad;
+    srand(time(NULL));
+    int min = 100000, max = 999999; //intervalos para numeros de 6 digitos
+    _numero = rand() % (max - min + 1) + min;
+    _numero = 103466;   //For TEST: Numero del Jugador. For PROD => Comment this line
+    
+	lst->agregaFinal(_nombre, _direccion, _telefono, _edad, _numero, 0, 0);
+}
+
+void generarNumeroGanador_Pozo(ListaSimple<int, string>* lst)
+{
+    system("cls");
+    cout << "======= :: Generar Numero Ganador :: =======" << endl;
+    srand(time(NULL));
+    int min = 100000, max = 999999; //intervalos para numeros de 6 digitos
+    int _numero = rand() % (max - min + 1) + min;
+    _numero = 123456;  //For TEST: Numero Ganador de la Loteria
+    lst->setNumGanador(_numero);
+    cout << "Numero Ganador: " << _numero << endl;
+    int _pozo = 1000000;   //For TEST
+    lst->setPozo(_pozo);
+    cout << "Pozo: " << _pozo << endl;
+
+    system("pause>0");
+}
+
+void ganadoresExacto(ListaSimple<int, string>* lst)
+{
+    system("cls");
+    cout << "======= :: Ganadores de Numero Exacto :: =======" << endl;
+    if (lst->getNumGanador() == 0)
+        cout << "Debe generar el Numero Ganador de la Lotería" << endl;
+    else if (lst->longitud() == 0)
+        cout << "Debe generar personas que compren la lotería" << endl;
+    else
+        lst->buscarExacto();
+
+    system("pause>0");
+}
+
+void ganadores4Digitos(ListaSimple<int, string>* lst)
+{
+    system("cls");
+    cout << "======= :: Ganadores con 4 Digitos de Coincidencia :: =======" << endl;
+    if (lst->getNumGanador() == 0)
+        cout << "Debe generar el Numero Ganador de la Lotería" << endl;
+    else if (lst->longitud() == 0)
+        cout << "Debe generar personas que compren la lotería" << endl;
+    else
+        lst->buscar4Digitos();
+
+    system("pause>0");
+}
+
+void ganadoresAnteriorSiguiente(ListaSimple<int, string>* lst)
+{
+    system("cls");
+    cout << "======= :: Ganadores Anterior y Siguiente :: =======" << endl;
+    if (lst->getNumGanador() == 0)
+        cout << "Debe generar el Numero Ganador de la Lotería" << endl;
+    else if (lst->longitud() == 0)
+        cout << "Debe generar personas que compren la lotería" << endl;
+    else
+        lst->buscarAnteriorSiguiente();
+
+    system("pause>0");
+}
+
+void mostrarLista(ListaSimple<int, string>* lst)
+{
+    system("cls");
+    cout << "======= :: Mostrar Lista :: =======" << endl;
+    lst->mostrarLista();
+    system("pause>0");
+}
+
+void guardarArchivo(ListaSimple<int, string>* lst)
+{
+    system("cls");
+    cout << "======= :: Guardar Lista en Archivo:: =======" << endl;
+    int opc = 0;
+    cout << "Tipo de Registros a Guardar (-1: Todos, 0: No Ganaron, 1: GanaronExacto, 2: Ganaron4Digitos, 3: GanaronAntSig): ";
+    cin >> opc;
+    lst->guardarArchivo("ArchivoLista.txt", opc);
+    cout << "Archivo Guardado..." << endl;
+    system("pause>0");
+
+}
+
+void procesarOpcion(short opc, ListaSimple<int, string>* lst)
+{
+    switch (opc)
+    {
+    case 1:
+        agregarNodo(lst);
+        break;
+    case 2:
+        generarNumeroGanador_Pozo(lst);
+        break;
+    case 3:
+        ganadoresExacto(lst);
+        break;
+    case 4:
+        ganadores4Digitos(lst);
+        break;
+    case 5:
+        ganadoresAnteriorSiguiente(lst);
+        break;
+    case 6:
+        mostrarLista(lst);
+        break;
+    case 7:
+        guardarArchivo(lst);
+        break;
+    case 8: //Salir
+        cout << "\n\n\n      :: Gracias por usar nuestro software !!! ::" << endl;
+        break;
+    default:
+        cout << "ERROR: Ingrese opcion corrrecta !" << endl;
+    }
+}
+
+short Menu()
+{
+    short opc;
+    system("cls");
+    cout << "======= ::MENU:: =======" << endl;
+    cout << "1. Agregar Persona" << endl;
+    cout << "2. Generar Numero Ganador y Pozo" << endl;
+    cout << "3. Ganadores con Numero Exacto" << endl;
+    cout << "4. Ganadores con 4 Digitos" << endl;
+    cout << "5. Ganadores Anterior y Siguiente " << endl;
+    cout << "6. Mostrar Lista " << endl;
+    cout << "7. Grabar Lista en Archivo " << endl;
+    cout << "8. Salir " << endl;
+    cout << "Opcion escogida: "; cin >> opc;
+
+    return opc;
+}
+
+
+int main()
+{
+    ListaSimple<int, string>* lst = new ListaSimple<int, string>();
+    //lst->agregaFinal("Primera Persona", "Primera Direccion", 123, 7, 777, 0, 0);
+
+    short opc;
+    do {
+        opc = Menu();
+        procesarOpcion(opc, lst);
+    } while (opc != 8);
+
+    //lst->~ListaSimple();
+    delete lst; //For TEST el destructor
+
+   
+	char car = _getch();
+	return 0;
+}

@@ -1,0 +1,307 @@
+#pragma once
+#include <functional>
+#include <fstream>
+
+using namespace std;	//std, necesario en este caso, para function (std::function)
+
+typedef unsigned int uint; //definimos el Tipo "unsigned int" como simplemente "uint"
+
+
+template <typename T, typename S, T NADA = 0>
+class ListaSimple {
+    struct Nodo;
+    typedef function<int(T, T)> Comp; //definimos la Expresion LAMBDA "function<int(T, T)>" como "Comp". Lambda recibe parametros del tipo "T" y devuelve "int" | El "typedef" va dentro de la clase, xq usa un tipo de dato definido en TEMPLATE
+
+    Nodo* ini; // Nodo Inicial. Luego, dentro de cada NODO se definirá un puntero al siguient Nodo (Nodo* sig)
+    uint    lon; // número de elementos en la lista
+    Comp    comparar; // lambda para criterio de comparación | EQUIVALENTE: function<int(T, T)> comparar;
+    
+    T numGanador;
+    T pozo;
+
+public:
+    ListaSimple();
+    ListaSimple(Comp _comparar);
+    ~ListaSimple();
+
+    uint    longitud();
+    bool    esVacia();
+
+    void    setNumGanador(T _numGanador);
+    T       getNumGanador();
+    void    setPozo(T _pozo);
+    T       getPozo();
+
+    //pos: posicion del nodo en la lista, empieza en 0(cero)
+    void    agregaInicial(S _nombre, S _direccion, T _telefono, T _edad, T _numero, T _tipo_ganador, T _premio);
+    void    agregaPos(S _nombre, S _direccion, T _telefono, T _edad, T _numero, T _tipo_ganador, T _premio, uint pos);
+    void    agregaFinal(S _nombre, S _direccion, T _telefono, T _edad, T _numero, T _tipo_ganador, T _premio);
+
+    void    mostrarNodo(Nodo* _nodo);
+    void    mostrarLista();
+
+    void    buscarExacto();
+    void    buscar4Digitos();
+    void    buscarAnteriorSiguiente();
+
+    void    guardarArchivo(string nfile, T _tipo_ganador);
+};
+
+
+template <typename T, typename S, T NADA>
+struct ListaSimple<T, S, NADA>::Nodo {
+    S nombre;
+    S direccion;
+    T telefono;
+    T edad;
+    T numero;   //numero de 6 digitos
+    T tipo_ganador; //Tipo de Ganador (0: Nada, 1: Numero Exacto, 2: 4Digitos, 3: AnteriorPosterior)
+    T premio;
+    Nodo* sig; // puntero apunta al siguiente nodo
+
+    Nodo(S _nombre, S _direccion, T _telefono, T _edad = NADA, T _numero=NADA, T _tipo_ganador=0, T _premio=0, Nodo* _sig = nullptr) : nombre(_nombre), direccion(_direccion), telefono(_telefono), edad(_edad), numero(_numero), tipo_ganador(_tipo_ganador), premio(_premio), sig(_sig) {}
+};
+
+template<typename T, typename S, T NADA>
+ListaSimple<T, S, NADA>::ListaSimple() : ini(nullptr), lon(0), numGanador(0), pozo(1000000), comparar([](T a, T b) {return a - b; }) {}
+
+template<typename T, typename S, T NADA>
+ListaSimple<T, S, NADA>::ListaSimple(Comp _comparar) : ini(nullptr), lon(0), numGanador(0), pozo(1000000), comparar(_comparar) {}
+
+template<typename T, typename S, T NADA>
+ListaSimple<T, S, NADA>::~ListaSimple() {
+    Nodo* aux = ini;
+    while (ini != nullptr) {
+        aux = ini;
+        ini = ini->sig;
+        delete aux; //aux!=nullptr, xq solo se borró el enlace del ptr a la memoria del Nodo, pero "aux" aun mantiene su propia direccion de memoria como puntero
+    }
+}
+
+template<typename T, typename S, T NADA>
+uint ListaSimple<T, S, NADA>::longitud() {
+    return lon;
+}
+
+template<typename T, typename S, T NADA>
+bool ListaSimple<T, S, NADA>::esVacia() {
+    return lon == 0;
+}
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::setNumGanador(T _numGanador) { numGanador = _numGanador; }
+
+template<typename T, typename S, T NADA>
+T ListaSimple<T, S, NADA>::getNumGanador() { return numGanador; }
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::setPozo(T _pozo) { pozo = _pozo; }
+
+template<typename T, typename S, T NADA>
+T ListaSimple<T, S, NADA>::getPozo() { return pozo; }
+
+
+
+//------- AGREGAR NODO -------
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::agregaInicial(S _nombre, S _direccion, T _telefono, T _edad, T _numero, T _tipo_ganador, T _premio) { //El Nuevo Nodo se agregará al INICIO, los demás nodos se corren hacia la "derecha"
+    Nodo* nuevo = new Nodo(_nombre, _direccion, _telefono, _edad, _numero, _tipo_ganador, _premio, ini);
+    if (nuevo != nullptr) {
+        ini = nuevo;
+        lon++;
+    }
+}
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::agregaPos(S _nombre, S _direccion, T _telefono, T _edad, T _numero, T _tipo_ganador, T _premio, uint pos) { //Se considera el Nodo Inicial en pos=0
+    if (pos > lon) return;
+    if (pos == 0) {
+        agregaInicial(_nombre, _direccion, _telefono, _edad, _numero, _tipo_ganador, _premio);
+    }
+    else {
+        Nodo* aux = ini;
+        for (int i = 1; i < pos; i++) {
+            aux = aux->sig;
+        }
+        Nodo* nuevo = new Nodo(_nombre, _direccion, _telefono, _edad, _numero, _tipo_ganador, _premio, aux->sig);
+        if (nuevo != nullptr) {
+            aux->sig = nuevo;
+            lon++;
+        }
+    }
+}
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::agregaFinal(S _nombre, S _direccion, T _telefono, T _edad, T _numero, T _tipo_ganador, T _premio) {
+    agregaPos(_nombre, _direccion, _telefono, _edad, _numero, _tipo_ganador, _premio, lon);
+}
+
+
+//------ IMPRIMIR LISTA -------
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::mostrarNodo(Nodo* _nodo)
+{
+    cout << "\n\t--------------------------------------------------------";
+    cout << "\n\tNombre: " << _nodo->nombre;
+    cout << "\n\tDireccion: " << _nodo->direccion;
+    cout << "\n\tEdad: " << _nodo->edad;
+    cout << "\n\tTelefono: " << _nodo->telefono;
+    cout << "\n\tNumero: " << _nodo->numero;
+    cout << "\n\tTipo Ganador: " << _nodo->tipo_ganador;
+    cout << "\n\tPremio: " << _nodo->premio;
+}
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::mostrarLista() {
+    Nodo* nodo = ini;
+    cout << "L -> ";
+    while (nodo != NULL) {
+        mostrarNodo(nodo);
+        if (nodo != NULL)
+            cout << "\n  -> ";
+        nodo = nodo->sig;
+    } 
+    cout << endl;
+}
+
+
+//------ BUSCAR EN LISTA -------
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::buscarExacto() {
+    Nodo* aux = ini;
+    T num_gan = 0;
+    while (aux != nullptr) {	//Recorremos la Lista
+        if (comparar(aux->numero, numGanador) == 0) {	//Uso Expresion LAMBDA
+            mostrarNodo(aux);
+            aux->tipo_ganador = 1;	//Tipo de Ganador (0: Nada, 1: Numero Exacto, 2: 4Digitos, 3: AnteriorPosterior)
+            ++num_gan;
+
+            //[Optional] Grabar en Archivo
+                //guardarArchivo();
+        }
+        aux = aux->sig;
+    }
+    
+	//2. Repartir Pozo entre Ganadores
+    T parte_pozo = 0;
+    if (num_gan > 0)
+    {
+        parte_pozo = pozo / num_gan;
+
+        //Recorrer Lista para asignar "parte_pozo"
+        aux = ini;
+        while (aux != nullptr) {
+            if (aux->tipo_ganador == 1)
+                aux->premio = parte_pozo;
+            aux = aux->sig;
+        }
+    }      
+}
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::buscar4Digitos() {
+	Nodo* aux = ini;
+	string numero_ganador = to_string(this->getNumGanador());	//convertimos a cadena
+	while (aux != nullptr) {	//Recorremos la Lista
+        if (aux->tipo_ganador != 1)	//Excluyo los ganadores de numero exacto
+        {
+            string numero_jugador = to_string(aux->numero);	//convertimos a cadena
+            int match = 0;
+            int j = 0;
+            for (int i = 0; i < numero_jugador.size(); i++)	//recorremos cada digito del numero
+            {
+                //if (numero_jugador[i] == numero_ganador[j]) {   //comparamos digito del numero del jugador con el digito del numero ganador.
+                if (comparar(numero_jugador[i], numero_ganador[j]) == 0){   // Tambien podemos usar la Expresion Lambda para comparar
+                   // cout << "Match: " << numero_jugador[i] << "\n";
+                    ++match;
+                }
+                ++j;
+            }
+            if (match == 4)
+            {
+                mostrarNodo(aux);
+                aux->tipo_ganador = 2;  // Tipo de Ganador (0: Nada, 1: Numero Exacto, 2: 4Digitos, 3: AnteriorPosterior)
+                aux->premio = 20000;
+            }
+        }
+        //Grabar en Archivo
+            //guardarArchivo();
+        aux = aux->sig;
+	}
+}
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::buscarAnteriorSiguiente()
+{
+    Nodo* aux = ini;    //"aux" persona a analizar
+    Nodo* ant = NULL;
+    Nodo* sig = NULL;
+    if (aux != NULL) sig = aux->sig;
+    while (aux != NULL)	//Recorremos la Lista
+    {
+        if (aux->tipo_ganador != 1 && aux->tipo_ganador != 2) //Un ganador de “Número exacto” y/o “4 dígitos” no debe ser considerado en esta categoría.
+        {
+            if (ant != NULL && sig != NULL)	//Caso de Nodo interno (ant!=NULL && sig != NULL)
+            {
+                if (ant->tipo_ganador != 0 && sig->tipo_ganador != 0) {
+                    //Doble Premio: Anterior y Siguiente son ganadores
+                    mostrarNodo(aux);
+                    aux->premio = 0.10 * ant->premio + 0.10 * sig->premio;
+                    aux->tipo_ganador = 3;
+                }
+                else if (ant->tipo_ganador != 0 && sig->tipo_ganador == 0) {
+                    //1 Premio: Anterior es Ganador
+                    mostrarNodo(aux);
+                    aux->premio = 0.10 * ant->premio;
+                    aux->tipo_ganador = 3;
+                }
+                else if (ant->tipo_ganador == 0 && sig->tipo_ganador != 0) {
+                    //1 Premio: Siguiente es Ganador
+                    mostrarNodo(aux);
+                    aux->premio = 0.10 * sig->premio;
+                    aux->tipo_ganador = 3;
+                }
+            }
+            else if (ant == NULL && sig->tipo_ganador != 0) //Caso de Nodo Inicio (ant==NULL)
+            {
+                //1 Premio: Siguiente es Ganador
+                mostrarNodo(aux);
+                aux->premio = 0.10 * sig->premio;
+                aux->tipo_ganador = 3;
+            }
+            else if (sig == NULL && ant->tipo_ganador != 0) //Caso de Nodo Final (sig==NULL)
+            {
+                //1 Premio: Anterior es Ganador
+                mostrarNodo(aux);
+                aux->premio = 0.10 * ant->premio;
+                aux->tipo_ganador = 3;
+            }
+        }
+		//Avanzamos los punteros
+        ant = aux;
+        aux = aux->sig;
+        if (aux!=NULL) sig = aux->sig;
+    }
+}
+
+template<typename T, typename S, T NADA>
+void ListaSimple<T, S, NADA>::guardarArchivo(string nfile, T _tipo_ganador)
+{
+    Nodo* aux = ini;
+    ofstream out;
+    out.open(nfile.c_str());	//devuelve un puntero a un arreglo (const char*)
+
+    if (!out.is_open()) {
+        cout << "No se puede abrir el archivo " << endl;
+    }
+    else {
+        while (aux) {	//Recorremos la Lista
+            if (aux->tipo_ganador == _tipo_ganador)	//Guarda segun Tipo de Ganador
+                out << aux->nombre << "|" << aux->direccion << "|" << aux->telefono << "|" << aux->numero << "|" << aux->tipo_ganador << "|" << aux->premio << "\n";
+            else if (_tipo_ganador == -1)    //Guarda Todos los Nodos
+                out << aux->nombre << "|" << aux->direccion << "|" << aux->telefono << "|" << aux->numero << "|" << aux->tipo_ganador << "|" << aux->premio << "\n";
+            aux = aux->sig;
+        }
+    }
+    out.close();
+}

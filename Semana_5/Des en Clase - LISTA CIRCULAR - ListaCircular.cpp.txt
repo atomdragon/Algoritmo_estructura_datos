@@ -1,0 +1,22 @@
+#include<iostream>
+
+#include "Nodo.h"
+#include "Lista.h"
+#include "Punto.h"
+
+using namespace std;
+
+int main() {
+	Lista<Punto*> pLista;
+	pLista.insertarInicio(new Punto(8, 1));
+	pLista.insertarInicio(new Punto(7, 2));
+	pLista.insertarInicio(new Punto(1, 3));
+	pLista.insertarFinal(new Punto(14, 15));
+	pLista.insertarInicio(new Punto(9, 4));
+	pLista.insertarInicio(new Punto(4, 5));
+	pLista.insertarPosicion(new Punto(40, 1), 3);
+	pLista.mostrar();
+
+	cin.get();
+	return 0;
+}

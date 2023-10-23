@@ -1,0 +1,44 @@
+#pragma once
+
+#include <iostream>
+#include <conio.h>
+
+using namespace std;
+
+void heapify(int arr[], int n, int i) {
+    // Encontrar el más grande valor entre la raíz, el hijo izquierdo y el hijo derecho
+    int largest = i;        // "i" es la posicion del Padre
+    int left = 2 * i + 1;   // "left" es la posicion del Hijo Izquierdo
+    int right = 2 * i + 2;  // "right" es la posicion del Hijo Derecho
+
+    if (left < n && arr[left] > arr[largest]) // Si (valor del Hijo Izquierdo > Valor del Padre)
+        largest = left;     // => El Mayor es el Hijo Izquierdo (se actualiza su posicion)
+
+    if (right < n && arr[right] > arr[largest]) // Si (valor del Hijo Derecho > Valor del Padre)
+        largest = right;    // => El Mayor es el Hijo Derecho (se actualiza su posicion)
+
+    // Intercambiar (swap) y continuar acumulando (HEAP) si la raíz(Padre) no es la más grande
+    if (largest != i) { //Si el MAyor no es el Padre(Raiz)
+        swap(arr[i], arr[largest]); //Intercambiamos el valor Padre (i) con el Mayor (largest)
+        heapify(arr, n, largest);   //Recursividad
+    }
+}
+
+
+void heapSort(int arr[], int n) {
+    // Genera max heap
+    //n/2 - 1: Es la posición del ultimo PADRE 
+    //for solo para la primera pasada (Primer elemento mayor del arreglo)
+    for (int i = n / 2 - 1; i >= 0; i--) //Recorremos desde la posicion del ultimoPadre hasta 0
+        heapify(arr, n, i); //Generamos el "Arbol Binario" para hallar el HEAP Max
+
+    // Heap sort
+    //for para las siguientes pasadas (a partir de la segunda)
+    for (int i = n - 1; i >= 0; i--) 
+    {
+        swap(arr[0], arr[i]);   //Intercambia la pos 0 (donde esta el Padre MAYOR) con la ultima posicion de la DERECHA (i)
+
+        // Vuelve a obtener el elemento más alto en la raíz (Padre Mayor)
+        heapify(arr, i, 0);
+    }
+}

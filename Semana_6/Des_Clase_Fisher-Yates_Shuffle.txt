@@ -1,0 +1,28 @@
+#include<iostream>
+#include<conio.h>
+#include<algorithm>
+
+using namespace std;
+
+int main()
+{
+	// ORDENAMIENTO
+	//char* barajas[] = {"A","F","C","X" ,"R" };
+	char barajas[] = { 'A','F','C','X' ,'R' };	//->REZC	
+	int N = 5;									// Tenemos una matriz de N elementos, A [N].
+	srand(time(NULL));							//->REZC: Preparamos la generacion de aleatorios
+	for (int i = N - 1; i > 0; i--) {			// Se itera la matriz desde el último elemento.
+		int j = (rand() % (i + 1));				// Si está en el i-ésimo elemento desde el final, genera un número aleatorio  j, en el rango [0, i].
+		swap(barajas[j], barajas[i]);			// Se intercambia A [i] y A [j].
+	}
+
+	// MOSTRAR ELEMENTOS
+	int x = 0;
+	while (x < N) {
+		cout << barajas[x];
+		x++;
+	}
+
+	_getch();
+	return 0;
+}

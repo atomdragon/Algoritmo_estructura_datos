@@ -1,0 +1,93 @@
+#include<iostream>
+#include<conio.h>
+#include <fstream>	//Gestion de Archivo
+#include <string>	//getline
+#include <sstream>	//stream
+
+using namespace std;
+
+#define nombre_archivo "alumnos.csv"
+
+void lecturaDatosDeArchivo()
+{
+	/*
+	* 1_ Lee Archivo .csv
+	* 2_ Imprime columnas de cada linea en consola
+	*/
+
+	ifstream archIN;
+	archIN.open(nombre_archivo, ios::in); //Apertura
+
+	if (!archIN.is_open())
+	{
+		cout << "Error: No se pudo abrir el archivo !!!" << endl;
+		exit(1);
+	}
+
+	string linea;
+	char delimitador = '|'; //Separador de cada columna de la línea
+
+	// Encabezado: Leemos la primera línea para descartarla, pues es el encabezado
+	getline(archIN, linea);
+
+	// Contenido: Leemos todas las líneas
+	while (getline(archIN, linea))
+	{
+		stringstream stream(linea); // Convertir la cadena a un stream
+
+		string col1, col2, col3;
+		// Extraer todos los valores de esa fila [considerando 3 columans]
+		getline(stream, col1, delimitador);
+		getline(stream, col2, delimitador);
+		getline(stream, col3, delimitador);
+
+		// Imprimir
+		cout << "Columna 1: " << col1;
+		cout << ", Columna 2: " << col2;
+		cout << ", Columna 3: " << col3;
+		cout << endl;
+	}
+
+	// Cerramos Archivo
+	archIN.close();
+}
+
+
+void excrituraDatosEnArchivo()
+{
+	/*
+	* 1_ Escribe Archivo .csv
+	*/
+
+	ofstream archOUT;
+	archOUT.open(nombre_archivo, ios::out); //Apertura
+
+	if (!archOUT.is_open())
+	{
+		cout << "Error: No se pudo abrir el archivo !!!" << endl;
+		exit(1);
+	}
+
+	// Escribimos en el Archivo
+	archOUT << "Codigo|ApePat|ApeMat|Nombre" << endl;
+	archOUT << "00001|Ramirez|Castro|Juan" << endl;
+	archOUT << "00002|Campos|Romero|Luis" << endl;
+	archOUT << "00003|Salazar|Bejar|Melba" << endl;
+
+	// Cerramos Archivo
+	archOUT.close();
+}
+
+
+int main() 
+{
+
+	// Escritura de Archivo
+	excrituraDatosEnArchivo();
+ 
+	// Lectura de Archivo
+	lecturaDatosDeArchivo();
+
+	cin.get();
+	return 0;
+}

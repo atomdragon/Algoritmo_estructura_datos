@@ -1,0 +1,107 @@
+#ifndef _LISTA_H_
+#define _LISTA_H_
+
+#include "Nodo.h"
+#include "Punto.h"
+
+template<class T>
+class Lista {
+private:
+	Nodo<T>* inicio;
+	int lon;
+public:
+	Lista() { inicio = NULL; };
+	~Lista() {};
+	void insertarInicio(T v);
+	void insertarFinal(T v);
+	void insertarPosicion(T v, int pos);
+	void mostrar();
+
+};
+
+template<class T>
+void Lista<T>::insertarInicio(T v) {
+	Nodo<T>* nuevo;
+	nuevo = new Nodo<T>(v); //T
+
+	if (inicio == NULL) {
+		inicio = nuevo;
+		nuevo->siguiente = inicio;
+	}
+	else {
+		Nodo<T>* aux = inicio; //"aux" debe llegar al ultimo Nodo de la Lista
+		//Recorremos para llegar al ultimo Nodo
+		while (aux->siguiente != inicio) { //Recorremos hasta llegar al ultimo nodo
+			aux = aux->siguiente;
+		}
+		//en este momento, "aux" es el ultimo Nodo de la Lista
+		nuevo->siguiente = inicio;	//1)
+		aux->siguiente = nuevo;	//2) final->siguiente = nuevo
+		inicio = nuevo;	//3)
+		aux = NULL;	//NULL a puntero del ultimo Nodo
+	}
+	nuevo = NULL;	//Borro la direccion del puntero "nuevo". La memoria de "nuevo" ahora pertenece o es apuntada por "inicio". 
+
+}
+
+template<class T>
+void Lista<T>::insertarFinal(T v) {
+	Nodo<T>* nuevo;
+	nuevo = new Nodo<T>(v); //T
+
+	if (inicio == NULL) {
+		insertarInicio(v);
+		return;
+	}
+	else {
+		Nodo<T>* aux = inicio;	//"aux" debe llegar al ultimo Nodo de la Lista
+		while (aux->siguiente != inicio) {	//Recorremos hasta llegar al ultimo nodo
+			aux = aux->siguiente; //Ultimo de la lista
+		}
+		//en este momento, "aux" es el ultimo Nodo de la Lista
+		aux->siguiente = nuevo;	//1) final->siguiente = nuevo
+		nuevo->siguiente = inicio;	//2)
+	}
+}
+
+template<class T>
+void Lista<T>::insertarPosicion(T v, int pos) {
+
+	Nodo<T>* aux = inicio;	// aux será el Nodo que llegará a la posicion (pos-1)
+	/*
+	//int i = 1;
+	while (i < pos)
+	{
+		aux = aux->siguiente; //Nodo en la posición POS
+		i++;
+	}
+	*/
+	for (int i = 1; i < pos; i++) {
+		aux = aux->siguiente;
+	}
+
+	Nodo<T>* nuevo;
+	nuevo = new Nodo<T>(v);
+
+	nuevo->siguiente = aux->siguiente; //1) enlazamos Nodo Nuevo con siguiente
+	aux->siguiente = nuevo;	//2) 
+
+}
+
+template<class T>
+void Lista<T>::mostrar() {
+	Nodo<T>* nodo = inicio;
+	cout << "L -> ";
+	do {
+		Punto* pto = (Punto*)(nodo->valor);
+		cout << pto->toString();
+
+		if (nodo != NULL)
+			cout << "-> ";
+		nodo = nodo->siguiente;
+	} while (nodo != inicio);
+	cout << endl;
+}
+
+#endif // !_LISTA_H_
+

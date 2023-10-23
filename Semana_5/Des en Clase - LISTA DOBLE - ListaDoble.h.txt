@@ -1,0 +1,234 @@
+#ifndef __LISTA_H__
+#define __LISTA_H__
+
+#include "nodo.h"
+#include "punto.h"
+#include <functional>
+
+template<class T>
+class Lista {
+private:
+	Nodo<T>* inicio;
+	int lon;
+
+	//LAMBDA
+	function<bool(int, int, int, int)> f_lambda;
+
+public:
+	//Lista() { inicio = NULL; lon = 0; }
+	Lista() {
+		inicio = NULL;
+		lon = 0;
+
+		//f_lambda = [](T a, T b) {return a - b; };
+		f_lambda = [](int x, int y, int _x, int _y) //Compara las coordenadas de los Puntos
+		{
+			if (x == _x && y == _y)
+				return true;
+			else
+				return false;
+		}; //definimos la funcion LAMBDA
+	}
+	~Lista();
+
+	void insertarInicio(T v);
+	void mostrar();
+
+	//REZC
+	void insertarPosicion(T v, int pos);
+	void insertarFinal(T v);
+
+	void modificarInicio(T v);
+	void modificarPosicion(T v, int pos);
+	void modificarFinal(T v);
+
+	void eliminarInicio();
+	void eliminarPosicion(int pos);
+	void eliminarFinal();
+
+	T obtenerNodo(int pos);
+
+	//bool operacion() {return f}
+	T buscar(T v);
+
+};
+
+//------------------------------------------------------------------------------
+template<class T>
+Lista<T>::~Lista() {
+	Nodo<T>* temp;
+	while (inicio != NULL) {
+		temp = inicio;
+		inicio = inicio->siguiente;
+		delete temp;
+		temp = NULL;
+	}
+	delete inicio;
+	inicio = NULL;
+}
+
+//------------------------------------------------------------------------------
+template<class T>
+void Lista<T>::insertarInicio(T v) {
+	Nodo<T>* nodo = new Nodo<T>(v);
+
+	if (inicio == NULL)
+		inicio = nodo;
+	else {
+		inicio->anterior = nodo;	// 1)
+		nodo->siguiente = inicio;	// 2)
+	}
+	inicio = nodo;
+	//delete nodo;
+	nodo = NULL;
+	++lon;
+}
+
+//------------------------------------------------------------------------------
+template<class T>
+void Lista<T>::mostrar() {
+	Nodo<T>* nodo = inicio;
+	cout << "L -> ";
+	do {
+		Punto* pto = (Punto*)(nodo->valor);
+		cout << pto->toString();
+
+		if (nodo != NULL)
+			cout << "<-> ";
+		nodo = nodo->siguiente;
+	} while (nodo != NULL);
+	cout << endl;
+}
+
+//------------------------------------------------------------------------------
+
+
+
+// [REZC] --- INSERTAR ---------------------------------------------------------
+template<class T>
+void Lista<T>::insertarPosicion(T v, int pos) { //Se considera el Nodo Inicial en pos=0
+	if (pos > lon) return;
+	if (pos == 0) {
+		insertarInicio(v);
+	}
+	else {
+		Nodo<T>* aux = inicio; // aux será el Nodo en la posicion (pos-1)
+		for (int i = 1; i < pos; i++) {
+			aux = aux->siguiente;
+		}
+
+		Nodo<T>* nuevo = new Nodo<T>(v);
+
+		if (nuevo != nullptr) {
+			nuevo->siguiente = aux->siguiente; // 1) enlazamos Nodo Nuevo con siguiente
+			nuevo->anterior = aux;	// 2)
+			
+			if (aux->siguiente != nullptr) 
+				aux->siguiente->anterior = nuevo;	// 3)
+			aux->siguiente = nuevo;	// 4)
+
+			++lon;
+		}
+	}
+}
+
+template<class T>
+void Lista<T>::insertarFinal(T v) {
+	insertarPosicion(v, lon);
+}
+
+
+// [REZC] --- MODIFICAR ---------------------------------------------------------
+template<class T>
+void Lista<T>::modificarPosicion(T v, int pos) //Se considera el Nodo Inicial en pos=0
+{
+	if (pos >= 0 && pos < lon) {
+		Nodo<T>* nodo = inicio; //Nodo Inicial
+		for (int i = 0; i < pos; i++) { //recorremos los Nodos hasta la posicion solicitada
+			nodo = nodo->siguiente;
+		}
+		nodo->valor = v; // 1) Actualizamos con los datos modificados
+	}
+}
+template<class T>
+void Lista<T>::modificarInicio(T v) //Se considera el Nodo Inicial en pos=0
+{
+	modificarPosicion(v, 0);
+}
+template<class T>
+void Lista<T>::modificarFinal(T v) //Se considera el Nodo Inicial en pos=0
+{
+	modificarPosicion(v, lon - 1);
+}
+
+
+// [REZC] --- ELIMINAR ---------------------------------------------------------
+template<class T>
+void Lista<T>::eliminarInicio() { //Elimina Nodo Inicial 
+	if (lon > 0) {
+		Nodo<T>* nodo = inicio; //Nodo Inicial
+		inicio = inicio->siguiente;
+		delete nodo;
+		lon--;
+	}
+}
+template<class T>
+void Lista<T>::eliminarPosicion(int pos) { //Se considera el Nodo Inicial en pos=0
+	//if (pos >= lon) return;
+	if (pos == 0)
+		eliminarInicio();
+	else if (pos >= 1 && pos < lon) {
+		Nodo<T>* nodo = inicio; //Nodo Inicial
+		Nodo<T>* for_remove;
+		for (int i = 1; i < pos; i++) {
+			nodo = nodo->siguiente; //Nodo antes de la posicion "pos" indicada
+		}
+		for_remove = nodo->siguiente; // 1) Nodo de la posicion "pos" indicada
+		nodo->siguiente = for_remove->siguiente;	// 2)
+		if (for_remove->siguiente != nullptr)
+			for_remove->siguiente->anterior = nodo;	// 3)
+
+		delete for_remove;
+		lon--;
+	}
+}
+template<class T>
+void Lista<T>::eliminarFinal() {
+	eliminarPosicion(lon - 1);
+}
+
+
+// [REZC] --- LEER NODO --------------------------------------------------------
+template<class T>
+T Lista<T>::obtenerNodo(int pos) {
+	if (pos >= 0 && pos < lon) {
+		Nodo<T>* nodo = inicio;
+		for (int i = 0; i < pos; i++) {
+			nodo = nodo->siguiente;
+		}
+		return nodo->valor;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+
+// [REZC] --- LAMBDA --------------------------------------------------------
+template<class T>
+T Lista<T>::buscar(T v) { //Busca Si v=Punto(x,y), se encuentra en algun Nodo de la lista; si lo está devuelve el Nodo, sino devuelve nullptr
+	Nodo<T>* nodo = inicio;
+	while (nodo != nullptr) {
+		Punto* pto_nodo = (Punto*)(nodo->valor);
+		Punto* pto_v = (Punto*)(v);
+		//LAMBDA: Compara las coordendas de cada Nodo (pto_nodo), con el Nodo que contiene los valores a buscar (pto_v)
+		if (f_lambda(pto_nodo->getX(), pto_nodo->getY(), pto_v->getX(), pto_v->getY()) == true) {
+			return nodo->valor;
+		}
+		nodo = nodo->siguiente;
+	}
+	return nullptr;
+}
+
+#endif
+

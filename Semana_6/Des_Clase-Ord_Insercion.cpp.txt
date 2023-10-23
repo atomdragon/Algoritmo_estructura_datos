@@ -1,0 +1,32 @@
+#include <iostream>
+
+using namespace std;
+
+void ordInsercion(int a[], int n)
+{
+	int aux, k;
+	for (int i = 1; i < n; i++)			//Iteraciones "i" desde segundo elemento ("i" <- 1 hasta n-1)
+	{
+		aux = a[i];						//aux guarda el elemento en "i"
+		k = i - 1;						//"k" recorre los indices a la izquierda de "i" (MANO IZQUIERDA)
+		while (k >= 0 && aux < a[k])	//Recorremos los elementos de la mano izquierda
+		{
+			a[k + 1] = a[k];			//Si el elemento comparado es menor, se mueve una posicion a su derecha
+			k--;						//"k" avanza una posicion hacia la izquierda
+		}
+		a[k + 1] = aux;					
+	}
+}
+
+void main() {
+	int numeros[] = { 4,5,2,7,8,1,0,3,6 };
+	int N = 9;
+	ordInsercion(numeros, N);
+
+	int j = 0;
+	while (j < N) {
+		cout << numeros[j];
+		j++;
+	}
+	cin.get();
+}

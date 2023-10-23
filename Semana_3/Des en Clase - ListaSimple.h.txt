@@ -1,0 +1,228 @@
+#pragma once
+
+#include <functional>
+
+using namespace std;	//std, necesario en este caso, para function (std::function)
+
+typedef unsigned int uint; //definimos el Tipo "unsigned int" como simplemente "uint"
+
+template <typename T, T NADA = 0>
+class ListaSimple {
+private:
+    struct 	Nodo;
+    typedef function<int(T, T)> Comp; //definimos la Expresion LAMBDA "function<int(T, T)>" como "Comp". Lambda recibe parametros del tipo "T" y devuelve "int" | El "typedef" va dentro de la clase, xq usa un tipo de dato definido en TEMPLATE
+
+    Nodo* ini; // Nodo Inicial. Luego, dentro de cada NODO se definirá un puntero al siguient Nodo (Nodo* sig)
+    uint    lon; // número de elementos en la lista
+    Comp    comparar; // lambda para criterio de comparación | EQUIVALENTE: function<int(T, T)> comparar;
+
+public:
+    ListaSimple();
+    ListaSimple(Comp _comparar);
+    ~ListaSimple();
+
+    uint    longitud();
+    bool    esVacia();
+
+    //pos: posicion del nodo en la lista, empieza en 0(cero)
+    void    agregaInicial(T elem);
+    void    agregaPos(T elem, uint pos);
+    void    agregaFinal(T elem);
+
+    void    modificarInicial(T elem);
+    void    modificarPos(T elem, uint pos);
+    void    modificarFinal(T elem);
+
+    void    eliminaInicial();
+    void    eliminaPos(uint pos);
+    void    eliminaFinal();
+
+    T       obtenerPos(uint pos);
+    T       obtenerInicial();
+    T       obtenerFinal();
+
+    T       buscar(T elem);
+};
+
+// Implementacion de NODO
+template <typename T, T NADA>
+struct ListaSimple<T, NADA>::Nodo {
+    T elem;
+    Nodo* sig; // puntero apunta al siguiente nodo
+
+    Nodo(T _elem = NADA, Nodo* _sig = nullptr) : elem(_elem), sig(_sig) {}
+};
+
+// Constructor de la Lista
+template<typename T, T NADA>
+ListaSimple<T, NADA>::ListaSimple() : ini(nullptr), lon(0), comparar([](T a, T b) {return a - b; }) {}
+
+// Constructor Sobrecargado
+template<typename T, T NADA>
+ListaSimple<T, NADA>::ListaSimple(Comp _comparar) : ini(nullptr), lon(0), comparar(_comparar) {}
+
+// Destructor
+template <typename T, T NADA>
+ListaSimple<T, NADA>::~ListaSimple() {
+    Nodo* aux = ini;
+    //while (aux != nullptr) { //generará ERROR y además generará un recorrido adicional
+    while (ini != nullptr) {
+        aux = ini;
+        ini = ini->sig;
+        delete aux; //aux!=nullptr, xq solo se borró el enlace del ptr a la memoria del Nodo, pero "aux" aun mantiene su propia direccion de memoria como puntero
+    }
+}
+
+template <typename T, T NADA>
+uint ListaSimple<T, NADA>::longitud() {
+    return lon;
+}
+
+template <typename T, T NADA>
+bool ListaSimple<T, NADA>::esVacia() {
+    return lon == 0;
+}
+
+
+
+// ------- AGREGAR NODO -------
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::agregaInicial(T elem) { //El Nuevo Nodo se agregará al INICIO, los demás nodos se corren hacia la "derecha"
+    Nodo* nuevo = new Nodo(elem, ini); // new Nodo(elem, sig); -> Completa el valor del nodo y enlaza a la Lista (sig)
+    if (nuevo != nullptr) {
+        ini = nuevo;
+        lon++;
+    }
+}
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::agregaPos(T elem, uint pos) { //Se considera el Nodo Inicial en pos=0
+    if (pos > lon) return;
+    if (pos == 0) {
+        agregaInicial(elem);
+    }
+    else {
+        Nodo* aux = ini;
+        for (int i = 1; i < pos; i++) {	//Avanza hasta una posicion antes del Nodo de posicion "pos" => El Nodo de posicion inicial "pos", se debe correr hacia la derecha
+            aux = aux->sig;
+        }
+        Nodo* nuevo = new Nodo(elem, aux->sig);	// Paso 1
+        if (nuevo != nullptr) {
+            aux->sig = nuevo;	// Paso 2
+            lon++;
+        }
+    }
+}
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::agregaFinal(T elem) {
+    agregarPos(elem, lon); // ;)
+}
+
+
+
+// ------- MODIFICAR NODO -------
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::modificarInicial(T elem) { //Modifica el elemento del Nodo
+    if (lon > 0) {
+        ini->elem = elem;
+    }
+}
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::modificarPos(T elem, uint pos) { //Se considera el Nodo Inicial en pos=0
+    if (pos >= 0 && pos < lon) {
+        Nodo* aux = ini;
+        for (int i = 0; i < pos; i++) {
+            aux = aux->sig;
+        }
+        aux->elem = elem; // Paso 1
+    }
+}
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::modificarFinal(T elem) { //Posicion Final: lon-1
+    modificarPos(elem, lon - 1);
+}
+
+
+
+// ------- ELIMINAR NODO -------
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::eliminaInicial() { //Elimina Nodo Inicial 
+    if (lon > 0) {
+        Nodo* aux = ini;
+        ini = ini->sig;
+        delete aux;
+        lon--;
+    }
+}
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::eliminaPos(uint pos) { //Se considera el Nodo Inicial en pos=0
+    //if (pos >= lon) return;
+    if (pos == 0)
+        eliminaInicial();
+    else if (pos >= 1 && pos < lon) {
+        Nodo* aux = ini;
+        Nodo* for_remove;
+        for (int i = 1; i < pos; i++) {
+            aux = aux->sig; //Nodo antes de la posicion "pos" indicada
+        }
+        for_remove = aux->sig; //Nodo de la posicion "pos" indicada
+        aux->sig = for_remove->sig; //Enlazamos los Nodos que estan a los lados (laterales) del nodo a remover
+        delete for_remove;  //Liberamos memoria del nodo.
+        lon--;
+    }
+}
+
+template <typename T, T NADA>
+void ListaSimple<T, NADA>::eliminaFinal() {
+    eliminaPos(lon - 1);
+}
+
+
+
+// ------- OBTENER NODO -------
+
+template <typename T, T NADA>
+T ListaSimple<T, NADA>::obtenerPos(uint pos) {
+    if (pos >= 0 && pos < lon) {
+        Nodo* aux = ini;
+        for (int i = 0; i < pos; i++) {
+            aux = aux->sig;
+        }
+        return aux->elem;
+    }
+    else {
+        return NADA;
+    }
+}
+
+template <typename T, T NADA>
+T ListaSimple<T, NADA>::obtenerInicial() {
+    return obtenerPos(0);
+}
+
+template <typename T, T NADA>
+T ListaSimple<T, NADA>::obtenerFinal() {
+    return obtenerPos(lon - 1);
+}
+
+
+// ------- BUSCAR NODO -------
+
+template <typename T, T NADA>
+T ListaSimple<T, NADA>::buscar(T elem) {
+    Nodo* aux = ini;
+    while (aux != nullptr) {
+        if (comparar(aux->elem, elem) == 0) {
+            return aux->elem;
+        }
+        aux = aux->sig;
+    }
+    return NADA;
+}

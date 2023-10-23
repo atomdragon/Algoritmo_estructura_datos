@@ -1,0 +1,44 @@
+#include <iostream>
+
+using namespace std;
+
+void ordShell(int a[], int n)
+{
+	int i, j, k, intervalo = n / 2;
+	int temp;
+	while (intervalo > 0)
+	{
+		for (i = intervalo; i <= n; i++)
+		{
+			j = i - intervalo;
+			while (j >= 0)
+			{
+				k = j + intervalo; //queda k=i;
+				if (a[j] <= a[k]) j = -1; /*termina el bucle, par ordenado */
+				else {
+					//Intercambiamos a[j] y a[k]
+					temp = a[j];
+					a[j] = a[k];
+					a[k] = temp;
+					j -= intervalo;
+				}
+			}
+		}
+		intervalo = intervalo / 2;
+	}
+
+}
+
+
+void main() {
+	int numeros[] = {6,1,5,2,3,4,0};
+	int N = 7;
+	ordShell(numeros, N);
+
+	int j = 0;
+	while (j < N) {
+		cout << numeros[j];
+		j++;
+	}
+	cin.get();
+}

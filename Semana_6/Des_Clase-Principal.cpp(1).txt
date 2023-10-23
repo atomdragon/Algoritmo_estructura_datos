@@ -1,0 +1,64 @@
+#include<iostream>
+
+using namespace std;
+
+#include "Nodo.h"
+#include "ListaDoble.h"
+#include "Punto.h"
+
+
+int main() {
+	Lista<Punto*> pLista;
+
+	cout << "\nINSERTAR Nodos..." << endl;
+	pLista.insertarInicio(new Punto(8, 1));
+	pLista.insertarInicio(new Punto(7, 2));
+	pLista.insertarInicio(new Punto(1, 3));
+	pLista.insertarInicio(new Punto(9, 4));
+	pLista.insertarInicio(new Punto(4, 5));
+	pLista.mostrar();
+
+	pLista.insertarPosicion(new Punto(3, 7), 3); //posicion "pos" empieza en 0
+	pLista.mostrar();
+
+	pLista.insertarFinal(new Punto(33, 77));
+	pLista.mostrar();
+
+
+	cout << "\nOrdenamiento..." << endl;
+	//--- DESARROLLAR el CODIGO de ORDENAMIENTO ---
+	pLista.ordenarByIntercambio();
+	pLista.mostrar();
+
+
+	cout << "\nMODIFICAR Nodos..." << endl;
+	pLista.modificarPosicion(new Punto(17, 13), 3);	//Modifica Nodo en posicion indicada
+	pLista.modificarInicio(new Punto(0, 0));	//Modifica Nodo Inicial
+	pLista.modificarFinal(new Punto(10, 10));	//Modifica Nodo Final
+	pLista.mostrar();
+
+	cout << "\nELIMINAR Nodos..." << endl;
+	pLista.eliminarPosicion(4);	//Elimina Nodo en posicion indicada
+	pLista.eliminarInicio();	//Elimina Nodo Inicial
+	pLista.eliminarFinal();	//Elimina Nodo Final
+	pLista.mostrar();
+
+	cout << "\nOBTENER Nodo..." << endl;
+	Punto* pto = (Punto*)(pLista.obtenerNodo(2)); //Busca Nodo en posicion indicada
+	if (pto != nullptr)
+		cout << pto->toString();
+	else
+		cout << "No Existe el Nodo" << endl;
+
+
+	cout << "\n\nBUSCAR Dato de Nodo..." << endl;
+	if (pLista.buscar(new Punto(17, 13)) != nullptr) //Buscando el Punto(7,3) en la Lista
+		cout << "SI se encuentra el Punto en la Lista" << endl;
+	else
+		cout << "NO se encuentra el Punto en la Lista" << endl;
+
+
+
+	cin.get();
+	return 0;
+}

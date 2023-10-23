@@ -1,0 +1,117 @@
+#include <iostream>
+#include <conio.h>
+#include <functional>
+#include "ListaSimple.h"
+
+using namespace std;
+
+void agregarNodo(ListaSimple<int>* lst)
+{
+    system("cls");
+    cout << "======= ::Agregar Elemento en Posicion:: =======" << endl;
+    int pos, elemento;
+    cout << "\tPosicion: "; cin >> pos;
+    cout << "\tElemento: "; cin >> elemento;
+    lst->agregaPos(elemento, pos);
+}
+
+void modificarNodo(ListaSimple<int>* lst)
+{
+    system("cls");
+    cout << "======= :: Modificar Elemento en Posicion :: =======" << endl;
+    int pos, elemento;
+    cout << "\tPosicion: "; cin >> pos;
+    cout << "\tElemento: "; cin >> elemento;
+    lst->modificarPos(elemento, pos);
+}
+
+void eliminarNodo(ListaSimple<int>* lst)
+{
+    system("cls");
+    cout << "======= :: Eliminar Elemento en Posicion :: =======" << endl;
+    int pos;
+    cout << "\tPosicion: "; cin >> pos;
+    lst->eliminaPos(pos);
+}
+
+void buscarElemento(ListaSimple<int>* lst)
+{
+    system("cls");
+    cout << "======= :: Buscar Elemento en Lista :: =======" << endl;
+    int elemento;
+    cout << "\tElemento: "; cin >> elemento;
+    if (lst->buscar(elemento) == 0)
+        cout << "\tNO se encuentra en la Lista";
+    else
+        cout << "\tSI se encuentra en la Lista";
+
+    system("pause>0");
+}
+
+void mostrarLista(ListaSimple<int>* lst)
+{
+    system("cls");
+    cout << "======= :: Mostrar Lista :: =======" << endl;
+    for (int i = 0; i < lst->longitud(); i++) {
+        cout << lst->obtenerPos(i) << endl;
+    }
+    system("pause>0");
+}
+
+void procesarOpcion(short opc, ListaSimple<int>* lst)
+{
+    switch (opc)
+    {
+    case 1:
+        agregarNodo(lst);
+        break;
+    case 2:
+        modificarNodo(lst);
+        break;
+    case 3:
+        eliminarNodo(lst);
+        break;
+    case 4:
+        buscarElemento(lst);
+        break;
+    case 5:
+        mostrarLista(lst);
+        break;
+    case 6: //Salir
+        return;
+    default:
+        cout << "ERROR: Ingrese opcion corrrecta !" << endl;
+    }
+}
+
+short Menu()
+{
+    short opc;
+    system("cls");
+    cout << "======= ::MENU:: =======" << endl;
+    cout << "1. Agregar Elemento en Posicion " << endl;
+    cout << "2. Modificar Elemento en Posicion " << endl;
+    cout << "3. Eliminar Elemento en Posicion " << endl;
+    cout << "4. Buscar Elemento en Lista " << endl;
+    cout << "5. Mostrar Lista " << endl;
+    cout << "6. Salir " << endl;
+    cout << "Opcion escogida: "; cin >> opc;
+
+    return opc;
+}
+
+int main()
+{
+    ListaSimple<int>* lst = new ListaSimple<int>();
+
+    short opc;
+    do {
+        opc = Menu();
+        procesarOpcion(opc, lst);
+    } while (opc != 6);
+
+    delete lst;
+
+    char car = _getch();
+    return 0;
+}

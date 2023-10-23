@@ -1,0 +1,37 @@
+#include <iostream>
+#include <conio.h>
+
+using namespace std;
+
+void ordIntercambio(int a[], int n)	//Ordenamiento Ascendente
+{
+	for (int i = 0; i < n - 1; i++)			//para i desde 1  hasta n-1 
+	{
+		for (int k = i + 1; k < n; k++)		//para k desde  i+1  hasta  n
+		{
+			if (a[i] > a[k])
+			{
+				int aux = a[i];
+				a[i] = a[k];
+				a[k] = aux;
+			}
+		}
+	}
+}
+
+
+int main() {
+
+	int numeros[] = { 4, 5, 2, 7, 8, 1, 0, 3, 6 };
+	int N = 9;
+	ordIntercambio(numeros, N);
+
+	int j = 0;
+	while (j < N) {
+		cout << numeros[j] << " ";
+		j++;
+	}
+
+	_getch();
+	return 0;
+}
