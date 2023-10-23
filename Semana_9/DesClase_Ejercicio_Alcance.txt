@@ -1,0 +1,32 @@
+================================
+   EJERCICIO REZC [Sesion 02]
+================================
+
+Usando una Estrategia de Hashing Abierto (Hashing Separado)
+-----------------------------------------------------------
+
+Construir un Hash Table de diferentes tamaños, para guardar Registros cuya entidad tenga los siguientes atributos:
+
+Entidad 
+
+	string dni;	
+	string nombre;	
+	string apellido;
+	int edad;
+
+
+Se solicita:
+- Definir el key y values de cada estudiante.
+- Definir el tamaño de la Tabla y una Funcion HAsh propia. 
+- Generar un conjunto de registros de entrada.
+- Mostrar todos los elementos de la tabla hash.
+- Buscar un estudiante y mostrar sus datos.
+
+
+
+DESAFIO ADICIONAL (para la siguiente semana):
+- Generar un conjunto de registros de entrada (> 1000 registros): Use un dataset.
+- Generar un conjunto de registros de entrada (> 3000 registros): Use un archivo de entrada
+- Realizar busquedas en el Hash Table.
+
+- Aplique el mismo procedimiento usando una estrategia de Hashing Cerrado (Hashing Lineal) 

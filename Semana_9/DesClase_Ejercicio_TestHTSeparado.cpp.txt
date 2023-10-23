@@ -1,0 +1,44 @@
+#include <iostream>
+#include "HashTablaAbierto.h"
+#include "HashEntidad.hpp"
+
+using namespace std;
+
+// Simple main
+int main()
+{
+	HashTablaA ht = HashTablaA();
+/*
+	ht.insert(HashEntidad(1000, 680));		// F(key): 1000 MOD 101 => Index = 91
+	ht.insert(HashEntidad(1500, 100));		// F(key): 1500 mod 101 => Index = 86
+	ht.insert(HashEntidad(950, 68));		// F(key):  950 MOD 101 => Index = 41
+
+	ht.insert(HashEntidad(344, 3773));		// F(key):  344 MOD 101 => Index = 41 => Generaría Colision, pero la LISTA lo soluciona
+*/
+
+	ht.insert(HashEntidad("12345678", "Luis", "Gonzales", 23));
+	ht.insert(HashEntidad("22334455", "Elisa", "Farias", 28));
+	ht.insert(HashEntidad("34572493", "Raul", "Cordova", 35));
+	ht.insert(HashEntidad("33445577", "Karina", "Castillo", 30));
+	ht.insert(HashEntidad("65638493", "Patricia", "Arce", 23));
+	
+	ht.insert(HashEntidad("87654321", "Matt", "Damon", 23));	//Genera el mismo INDICE que el primer registro
+
+	cout << "Vista de la tabla Hash:" << endl;
+	ht.DispAll();
+
+	string key_a_buscar = "12345678";
+	//cout << "\tKey a buscar: " << key_a_buscar << endl;
+
+	//cout << "\tIngrese key a buscar: "; cin >> key_a_buscar;
+	//or
+	cin.clear();
+	cin.ignore();
+	cout << "\tIngrese key a buscar: ";
+	getline(cin, key_a_buscar);
+	
+	ht.buscar(key_a_buscar);
+
+	cin.get();
+	return 0;
+}

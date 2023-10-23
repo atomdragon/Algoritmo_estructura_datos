@@ -1,0 +1,95 @@
+#include "ArbolB_Ejercicios.h"
+#include <stdlib.h>
+#include <time.h>
+#include <iostream>
+#include <conio.h>
+
+using namespace std;
+
+void imprimir(int e) {
+	cout << " " << e;
+}
+
+int main() {
+	//srand(time(0));
+	ArbolB<int>* arbol = new ArbolB<int>(imprimir);
+	/*
+	for (int i = 0; i < 30; ++i) {
+		arbol->insertar(rand() % 100);
+	}*/
+
+	//***Pruebas***
+	//Ingreso manual
+	//Caso 1:
+	//arbol->insertar(6);
+	//arbol->insertar(16);
+	//arbol->insertar(26);
+/*
+	//Caso 2:
+	arbol->insertar(10);
+	arbol->insertar(6);
+	arbol->insertar(26);
+
+	//EJERCICIOS Planteados:
+	arbol->insertar(3);
+	arbol->insertar(1);
+*/
+
+// Arbol Binario de PPT
+	arbol->insertar(15);
+	arbol->insertar(9);
+	arbol->insertar(20);
+	arbol->insertar(6);
+	arbol->insertar(14);
+	arbol->insertar(17);
+	arbol->insertar(64);
+	arbol->insertar(13);
+	arbol->insertar(26);
+	arbol->insertar(72);
+
+
+	cout << "EnOrden";
+	arbol->enOrden();
+	cout << endl;
+
+	cout << "PreOrden";
+	arbol->preOrden();
+	cout << endl;
+
+	cout << "PostOrden";
+	arbol->postOrden();
+	cout << endl;
+
+	cout << "Altura: " << arbol->altura() << endl;
+	cout << "Cantidad: " << arbol->cantidad() << endl;
+
+
+	// =============================================================== //
+	//EJERCICIOS Planteados:
+
+
+	//1) Implemente una función que determine cuantos nodos hay al lado izquierdo y cuantos hay al lado derecho de la raíz.
+	cout << "Cantidad de Nodos en el Lado Izquierdo: " << arbol->cantidadIzq() << endl;
+	cout << "Cantidad de Nodos en el Lado Derecho: " << arbol->cantidadDer() << endl;
+
+	//2) Implemente una función que devuelva la suma de todos los números de un árbol binario de enteros.
+	cout << "\nSuma de todos los numeros de un arbol binario: " << arbol->suma() << endl;
+
+	//3) Implemente una función que permita convertir un árbol binario en su espejo.
+	cout << "\nArbol binario en su espejo: ";
+	arbol->espejo();
+	cout << endl;
+
+	//4) BUSCAR un elemento en el ARBOL
+	int e;
+	cout << "\nElemento a Buscar en el Arbol: "; cin >> e;
+	if (arbol->buscar(e))
+		cout << "El elemento " << e << " SI se encuentra en el ARBOL !" << endl;
+	else
+		cout << "El elemento " << e << " NO se encuentra en el ARBOL !" << endl;
+
+
+	//cin.get();
+	_getch();
+	return 0;
+}

@@ -1,0 +1,265 @@
+#pragma once
+#ifndef __ARBOLB_EJERCICIOS_HPP__
+#define __ARBOLB_EJERCICIOS_HPP__
+
+#include<algorithm>
+
+template <class T>
+class Nodo {
+public:
+	T elemento;
+	Nodo* izq;
+	Nodo* der;
+};
+
+template <class T>
+class ArbolB {
+	Nodo<T>* raiz;
+	void(*procesar)(T); //Puntero a funcion
+
+public: //Metodos publicos que llaman a metodos internos de la clase
+	ArbolB(void(*otroPunteroAFuncion)(T)) { //Constructor del Arbol: recibe como parametro un puntero a una funcion
+		this->procesar = otroPunteroAFuncion;
+		raiz = nullptr;
+	}
+	bool insertar(T e) {
+		return _insertar(raiz, e);
+	}
+	void enOrden() {
+		_enOrden(raiz);
+	}
+	void preOrden() {
+		_preOrden(raiz);
+	}
+	void postOrden() {
+		_postOrden(raiz);
+	}
+	int cantidad() {
+		return _cantidad(raiz);
+	}
+	int altura() {
+		return _altura(raiz);
+	}
+
+
+	// =============================================================== //
+
+
+	//EJERCICIOS Planteados:
+	//1) Implemente una función que determine cuantos nodos hay al lado izquierdo y cuantos hay al lado derecho de la raíz.
+	int cantidadIzq() {
+		return _cantidadIzq(raiz);
+	}
+	int cantidadDer() {
+		return _cantidadDer(raiz);
+	}
+
+	//2) Implemente una función que devuelva la suma de todos los números de un árbol binario de enteros.
+	int suma() {
+		return _suma(raiz);
+	}
+
+	//3) Implemente una función que permita convertir un árbol binario en su espejo.
+	// SOLUCION omo IMPRESION
+	void espejo() {
+		_espejo(raiz);
+	}
+	//SOLUCION como IMPLEMENTACION
+	bool insertarEspejo(T e) {
+		return _insertarEspejo(raiz, e);
+	}
+
+	//[REZC] BUSCAR un elemento en el ARBOL
+	bool buscar(T e) {
+		return _buscar(raiz, e);
+	}
+
+
+
+private: //Metodos internos de la clase
+	//se pasa como parametro el nodo, xq se puede empezar la operación desde cualquier nodo hacia abajo, no necesariamente debe ser el nodo Raiz.
+	bool _insertar(Nodo<T>*& nodo, T e) { //Parametros: (Nodo Padre, elemento)
+		if (nodo == nullptr) { //Si no hay Nodo
+			nodo = new Nodo<T>();
+			nodo->elemento = e;
+			//OBS: Los nodos izq y der deberian estar en nullptr
+		}
+		else if (e < nodo->elemento) {
+			return _insertar(nodo->izq, e); //recursividad
+		}
+		else if (e >= nodo->elemento) {
+			return _insertar(nodo->der, e);	//recursividad
+		}
+	}
+
+	void _enOrden(Nodo<T>* nodo) { //recorrido: Izq => Raiz => Der
+		if (nodo == nullptr) return;
+		_enOrden(nodo->izq);	//por ejemplo imprime Izq
+		procesar(nodo->elemento);	//por ejemplo imprime Raiz
+		_enOrden(nodo->der);	//por ejemplo imprime Der
+	}
+	void _preOrden(Nodo<T>* nodo) {	//Recorrido: Raiz => Izq => Der
+		if (nodo == nullptr) return;
+		procesar(nodo->elemento); //por ejemplo imprime Raiz
+		_preOrden(nodo->izq);	//por ejemplo imprime Izq
+		_preOrden(nodo->der);	//por ejemplo imprime Der
+	}
+	void _postOrden(Nodo<T>* nodo) { //Recorrido: Izq => Der => Raiz
+		if (nodo == nullptr) return;
+		_postOrden(nodo->izq);	//por ejemplo imprime Izq
+		_postOrden(nodo->der);	//por ejemplo imprime Der
+		procesar(nodo->elemento);	//por ejemplo imprime Raiz
+	}
+
+	bool _vacio() {
+		return raiz == nullptr;
+	}
+	int _cantidad(Nodo<T>* nodo) {
+		//La cantidad de nodos del árbol es:
+		//	0 si es vacío
+		//	1 + la cantidad de nodos por la izquierda + la cantidad de nodos por la derecha
+
+		if (nodo == nullptr)
+			return 0;
+		else
+		{
+			int ci, cd;
+			ci = _cantidad(nodo->izq);
+			cd = _cantidad(nodo->der);
+			return 1 + ci + cd;
+		}
+
+	}
+	int _altura(Nodo<T>* nodo) {
+		//La altura del árbol es:
+		//	0 si es vacío
+		//	la mayor de las alturas por la izquierda y por la derecha, las cuáles son 0 si son vacías ó 1 + la altura por la izq(o der) en caso contrario
+
+		if (nodo == nullptr)
+			return 0;
+		else
+		{
+			int ai, ad;
+			// [Opcion 1] OK:
+			ai = 1 + _altura(nodo->izq);
+			ad = 1 + _altura(nodo->der);
+			return ai > ad ? ai : ad;
+
+			// [Opcion 2] OK:
+			/*
+			ai = _altura(nodo->izq);
+			ad = _altura(nodo->der);
+			return 1 + max(ai, ad);
+			*/
+		}
+	}
+
+
+	//EJERCICIOS Planteados:
+	//1) Implemente una función que determine cuantos nodos hay al lado izquierdo y cuantos hay al lado derecho de la raíz.
+	int _cantidadIzq(Nodo<T>* nodo) {
+		//La cantidad de nodos del árbol del lado izquierdo es:
+		//	0 si es vacío
+		//	1 + la cantidad de nodos por la izquierda
+
+		// [Opcion 1: ERROR]: Solo se va por el lado izquierdo y cuenta
+		/*
+		if (nodo == nullptr)
+			return 0;
+		else
+		{
+			int ci;
+			ci = _cantidadIzq(nodo->izq);
+			return 1 + ci;
+		}
+		*/
+
+		// [Opcion 2: OK]: Cuenta todos los nodos de la Rama Izquierda de la Raiz  
+		return _cantidad(nodo->izq);
+
+
+	}
+	int _cantidadDer(Nodo<T>* nodo) {
+		//La cantidad de nodos del árbol del lado derecho es:
+		//	0 si es vacío
+		//	1 + la cantidad de nodos por la derecha
+
+		// [Opcion 1: ERROR]: Solo se va por el lado derecho y cuenta
+		/*
+		if (nodo == nullptr)
+			return 0;
+		else
+		{
+			int cd;
+			cd = _cantidadDer(nodo->der);
+			return 1 + cd;
+		}
+		*/
+
+		// [Opcion 2: OK]: Cuenta todos los nodos de la Rama Derecha de la Raiz  
+		return _cantidad(nodo->der);
+	}
+
+
+	//2) Implemente una función que devuelva la suma de todos los números de un árbol binario de enteros.
+	int _suma(Nodo<T>* nodo) {
+		//La suma de los valores de nodos del árbol es:
+		//	0 si es vacío
+		//	valor del elemento del nodo + suma de nodos por la izquierda + la suma de nodos por la derecha
+
+		if (nodo == nullptr)
+			return 0;
+		else
+		{
+			int si, sd;
+			si = _suma(nodo->izq);
+			sd = _suma(nodo->der);
+			return nodo->elemento + si + sd;
+		}
+	}
+
+	//3) Implemente una función que permita convertir un árbol binario en su espejo.
+	// SOLUCION como IMPRESION
+	void _espejo(Nodo<T>* nodo) {	//Recorrido: Raiz => Der => Izq [VERIFICAR]
+		if (nodo == nullptr) return;
+		procesar(nodo->elemento); //por ejemplo imprime Raiz
+		_espejo(nodo->der);	//por ejemplo imprime Der
+		_espejo(nodo->izq);	//por ejemplo imprime Izq
+	}
+
+	//SOLUCION como IMPLEMENTACION
+	bool _insertarEspejo(Nodo<T>*& nodo, T e) { //Parametros: (Raiz, elemento)
+		if (nodo == nullptr) {
+			nodo = new Nodo<T>();
+			nodo->elemento = e;
+			//OBS: Los nodos izq y der deberian estar en nullptr
+		}
+		else if (e > nodo->elemento) {
+			return _insertar(nodo->izq, e); //recursividad
+		}
+		else if (e <= nodo->elemento) {
+			return _insertar(nodo->der, e);	//recursividad
+		}
+	}
+
+	// [REZC] BUSCAR un elemento en el ARBOL
+	bool _buscar(Nodo<T>*& nodo, T e) { //Parametros: (Nodo Padre, elemento)
+		if (nodo == nullptr) { //Si no hay Nodo
+			return false;
+		}
+		else if (e < nodo->elemento) {
+			return _buscar(nodo->izq, e); //recursividad
+		}
+		else if (e > nodo->elemento) {
+			return _buscar(nodo->der, e);	//recursividad
+		}
+		else if (e == nodo->elemento) //encontró el elmento e
+		{
+			return true;
+		}
+	}
+
+
+};
+
+#endif

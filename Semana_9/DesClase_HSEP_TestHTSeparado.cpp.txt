@@ -1,0 +1,23 @@
+#include <iostream>
+#include "HashTablaAbierto.h"
+#include "HashEntidad.hpp"
+
+using namespace std;
+
+// Simple main
+int main()
+{
+	HashTablaA ht = HashTablaA();
+	ht.insert(HashEntidad(1000, 680));		// F(key): 1000 MOD 101 => Index = 91
+	ht.insert(HashEntidad(1500, 100));		// F(key): 1500 mod 101 => Index = 86
+	ht.insert(HashEntidad(950, 68));		// F(key):  950 MOD 101 => Index = 41
+
+	ht.insert(HashEntidad(344, 3773));		// F(key):  344 MOD 101 => Index = 41 => Generaría Colision, pero la LISTA lo soluciona
+
+
+	cout << "Vista de la tabla Hash:" << endl;
+	ht.DispAll();
+
+	cin.get();
+	return 0;
+}

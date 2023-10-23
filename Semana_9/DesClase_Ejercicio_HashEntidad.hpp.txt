@@ -1,0 +1,30 @@
+#ifndef __ENTIDADHASH_HPP__
+#define __ENTIDADHASH_HPP__
+
+#include<string>
+
+using namespace std;
+
+class HashEntidad {
+private:
+	string key;			//dni
+	string nombre;		//value1
+	string apellido;	//value2
+	int edad;
+
+public:
+	//HashEntidad() {}
+	HashEntidad(string _key, string _nombre, string _apellido, int _edad) {
+		this->key = _key;
+		this->nombre = _nombre;
+		this->apellido = _apellido;
+		this->edad = _edad;
+	}
+
+	string getKey() { return key; }
+	string getNombre() { return nombre; }
+	string getApellido() { return apellido; }
+	int getEdad() { return edad; }
+};
+
+#endif // !__ENTIDADHASH_HPP__

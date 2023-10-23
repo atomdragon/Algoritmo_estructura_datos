@@ -1,0 +1,67 @@
+#pragma once
+#ifndef __HEAP_HPP__
+#define __HEAP_HPP__
+
+#include <iostream>
+using namespace std;
+
+
+//Considerando i = {0, 1, 2, 3,...}
+int parent(int i) {	//Posicion del Padre
+	return (i - 1) / 2;
+}
+int left(int i) {	//Posicion del Hijo Izquierdo
+	return 2 * i + 1;
+}
+int rigth(int i) {	//Posicion del Hijo Derecho
+	return 2 * i + 2;
+}
+
+void maxHeapify(int A[], int n, int i) {
+						cout << "\ti=" << i << ", A[i]=" << A[i];
+	int l = left(i);	cout << "\tl=" << l << ", A[l]="<< A[l]; //l: indice izquierdo, i: indice padre
+	int r = rigth(i);	cout << "\tr=" << r << ", A[r]=" << A[r]; //r: indice derecho, i: indice padre
+	int largest(0);		//cout << "\tlargest=" << largest << ", A[largest]=" << A[largest]; cout << endl;
+	if (l <= (n - 1) && A[l] > A[i]) {	//Si l < n-1 && (nodo_izquierdo > nodo_padre)
+		largest = l;	//nodo_mayor = l
+	}
+	else //Si l >= n-1 || (nodo_izquierdo <= nodo_padre)
+		largest = i;	//nodo_mayor = i (padre)
+	
+	if (r <= (n - 1) && A[r] > A[largest]) {	//Si r < n-1 && (nodo_derecho > nodo_mayor)
+		largest = r;	//nodo_mayor = r
+	}
+	
+	// Imprimimos el indice, que contiene el Nodo Mayor.
+	cout << "\tlargest=" << largest << ", A[largest]=" << A[largest]; cout << endl;
+
+	if (largest != i) {	//if (nodo_mayor != nodo_padre)
+		swap(A[i], A[largest]);		//Intercambia (nodo_padre, nodo_mayor)
+		maxHeapify(A, n, largest);	//Recursividad, para formar los nodos del arbol
+	}
+}
+
+void buildMaxHeap(int A[], int n) {
+	for (int i = n / 2 - 1; i >= 0; --i) {
+		maxHeapify(A, n, i);
+	}
+}
+
+void print(int A[], int n) {
+	for (int i = 0; i < n; ++i) {
+		cout << A[i] << " ";
+		//cout << endl;
+	}
+}
+
+//aplicación de ordenamiento
+void heapsort(int A[], int n) {
+	buildMaxHeap(A, n);
+	for (int i = n - 1; i > 0; --i) {
+		swap(A[0], A[i]);
+		maxHeapify(A, --n, 0);
+	}
+}
+
+#endif // !__HEAP_HPP__
+
