@@ -1,0 +1,153 @@
+#ifndef __GESTION_H__
+#define __GESTION_H__
+
+#include<iostream>
+#include<fstream>	//Gestion de Archivo
+#include<string>	//getline
+#include<sstream>	//stream
+#include"ArbolBB.h"
+#include"HashTablaAbierto.h"
+
+using namespace std;
+
+void imprimir(string e) {
+	cout << " " << e << endl;
+}
+
+class GestionDatos
+{
+private:
+	ArbolBB <string, string, bool>* arbol;
+	HashTablaA ht;
+
+	string nombre_archivo;
+
+public:
+	GestionDatos();
+	~GestionDatos();
+
+	void insertarDatos();
+	void imprmirArbol();
+
+	void lecturaDatosDeArchivo();
+	void Intervalo_AlumnosNombre();
+	void Mostrar_Nombre_Ascendente();
+	void GenerarListaPreOrden();
+
+	//Hash Table
+	void buscar_CodigoAlumno(string _key);
+
+};
+
+GestionDatos::GestionDatos()
+{
+	nombre_archivo = "alumnos.csv";
+
+	arbol = new ArbolBB<string, string, bool>(imprimir);
+	ht = HashTablaA();
+}
+GestionDatos::~GestionDatos() {}
+
+void GestionDatos::insertarDatos()
+{
+	/*
+	arbol->insertar(15);
+	arbol->insertar(20);
+	arbol->insertar(24);
+	arbol->insertar(10);
+	arbol->insertar(13);
+	arbol->insertar(7);
+	arbol->insertar(30);
+	arbol->insertar(36);
+	arbol->insertar(25);
+	*/
+}
+
+void GestionDatos::imprmirArbol()
+{
+	arbol->imprimeArbol();
+}
+
+void GestionDatos::lecturaDatosDeArchivo()
+{
+	/*
+	* 1_ Lee Archivo .csv
+	* 2_ Inserta en Nodo de Arbol
+	*/
+
+	ifstream archIN;
+	archIN.open(nombre_archivo, ios::in); //Apertura
+
+	if (!archIN.is_open())
+	{
+		cout << "Error: No se pudo abrir el archivo !!!" << endl;
+		exit(1);
+	}
+
+	string linea;
+	char delimitador = ';';
+
+	// Formato de Archivo [file headers]
+	// index, age, discordid, minecraftid, client, version
+
+
+	// Encabezado: Leemos la primer l nea para descartarla, pues es el encabezado
+	getline(archIN, linea);
+
+	// Contenido: Leemos todas las l neas
+	while (getline(archIN, linea))
+	{
+		stringstream stream(linea); // Convertir la cadena a un stream
+
+		string col1, col2, col3;
+		// Extraer todos los valores de esa fila [considerando 3 columans]
+		getline(stream, col1, delimitador);
+		getline(stream, col2, delimitador);
+		getline(stream, col3, delimitador);
+
+		/*
+		// Imprimir
+		cout << "==================" << endl;
+		cout << "Columna 1: " << col1;
+		cout << ", Columna 2: " << col2;
+		cout << ", Columna 3: " << col3;
+		cout << endl;
+		*/
+
+		//ARBOL: Nodo tendr  como elemento la columna 2
+		arbol->insertar(col2); //NombreApellido
+
+		//HASH
+		//Considerando (key, value) = (apellidos_nombres, codigo, sexo)
+		ht.insert(HashEntidad(col1, col2, col3));
+	}
+
+	archIN.close();
+}
+
+void GestionDatos::Intervalo_AlumnosNombre()
+{
+	arbol->Intervalo_AlumnosNombre("G", "M");
+}
+
+void GestionDatos::Mostrar_Nombre_Ascendente()
+{
+	arbol->enOrden();
+}
+
+void GestionDatos::GenerarListaPreOrden()
+{
+	arbol->preOrdenToLista();
+
+	list<string>* lista = arbol->getLista();
+	for (auto x : *lista) {
+		cout << x << endl;
+	}
+}
+
+void GestionDatos::buscar_CodigoAlumno(string _key)
+{
+	ht.buscar(_key);
+}
+
+#endif // __GESTION_H__

@@ -1,0 +1,196 @@
+#include <iostream>
+#include <conio.h>
+#include <fstream>	//Gestion de Archivo
+#include <string>	//getline
+#include <sstream>	//stream
+#include <vector>
+#include "ArbolBB.h"
+#include "HashTablaAbierto.h"
+#include "GestionDatos.h"
+
+//#define nombre_archivo "archivo_ejemplo.csv"
+#define nombre_archivo "alumnos.csv"
+
+using namespace std;
+
+void lecturaDatosDeArchivo()
+{
+	/*
+	* 1_ Lee Archivo .csv
+	* 2_ Imprime columnas de cada linea en consola
+	*/
+
+	ifstream archIN;
+	archIN.open(nombre_archivo, ios::in); //Apertura
+
+	if (!archIN.is_open())
+	{
+		cout << "Error: No se pudo abrir el archivo !!!" << endl;
+		exit(1);
+	}
+
+	string linea;
+	char delimitador = ';';
+
+	// Encabezado: Leemos la primer línea para descartarla, pues es el encabezado
+	getline(archIN, linea);
+
+	// Contenido: Leemos todas las líneas
+	while (getline(archIN, linea))
+	{
+		stringstream stream(linea); // Convertir la cadena a un stream
+
+		string col1, col2, col3;
+		// Extraer todos los valores de esa fila [considerando 3 columans]
+		getline(stream, col1, delimitador);
+		getline(stream, col2, delimitador);
+		getline(stream, col3, delimitador);
+
+		// Imprimir
+		cout << "==================" << endl;
+		cout << "Columna 1: " << col1;
+		cout << ", Columna 2: " << col2;
+		cout << ", Columna 3: " << col3;
+		cout << endl;
+	}
+
+	archIN.close();
+}
+
+void lecturaDatosDeArchivo_Arbol(ArbolBB<string, string, bool>* arbol)
+{
+	/*
+	* 1_ Lee Archivo .csv
+	* 2_ Inserta en Nodo de Arbol
+	*/
+
+	ifstream archIN;
+	archIN.open(nombre_archivo, ios::in); //Apertura
+
+	if (!archIN.is_open())
+	{
+		cout << "Error: No se pudo abrir el archivo !!!" << endl;
+		exit(1);
+	}
+
+	string linea;
+	char delimitador = ';';
+
+	// Formato de Archivo [file headers]
+	// codigo; apellidos_nombre; sexo
+
+	// Encabezado: Leemos la primer línea para descartarla, pues es el encabezado
+	getline(archIN, linea);
+
+	// Contenido: Leemos todas las líneas
+	while (getline(archIN, linea))
+	{
+		stringstream stream(linea); // Convertir la cadena a un stream
+
+		string col1, col2, col3;
+		// Extraer todos los valores de esa fila [considerando 3 columans]
+		getline(stream, col1, delimitador);
+		getline(stream, col2, delimitador);
+		getline(stream, col3, delimitador);
+
+		// Imprimir
+		cout << "==================" << endl;
+		cout << "Columna 1: " << col1;
+		cout << ", Columna 2: " << col2;
+		cout << ", Columna 3: " << col3;
+		cout << endl;
+
+		//Nodo tendrá como elemento la columna 2
+		arbol->insertar(col2);
+	}
+
+	archIN.close();
+}
+
+void lecturaDatosDeArchivo_Hash(HashTablaA& ht)
+{
+	/*
+	* 1_ Lee Archivo .csv
+	* 2_ Inserta en Hash Entidad
+	*/
+
+	ifstream archIN;
+	archIN.open(nombre_archivo, ios::in); //Apertura
+
+	if (!archIN.is_open())
+	{
+		cout << "Error: No se pudo abrir el archivo !!!" << endl;
+		exit(1);
+	}
+
+	string linea;
+	char delimitador = ';';
+
+	// Formato de Archivo [file headers]
+	// codigo; apellidos_nombre; sexo
+
+	// Encabezado: Leemos la primer línea para descartarla, pues es el encabezado
+	getline(archIN, linea);
+
+	// Contenido: Leemos todas las líneas
+	while (getline(archIN, linea))
+	{
+		stringstream stream(linea); // Convertir la cadena a un stream
+
+		string col1, col2, col3;
+		// Extraer todos los valores de esa fila [considerando 3 columans]
+		getline(stream, col1, delimitador);
+		getline(stream, col2, delimitador);
+		getline(stream, col3, delimitador);
+
+		// Imprimir
+		cout << "==================" << endl;
+		cout << "Columna 1: " << col1;
+		cout << ", Columna 2: " << col2;
+		cout << ", Columna 3: " << col3;
+		cout << endl;
+
+		//Considerando (key, value) = (apellidos_nombres, codigo, sexo)
+		ht.insert(HashEntidad(col2, col1, col3));
+
+	}
+
+	archIN.close();
+}
+
+
+int main() 
+{
+	GestionDatos* oGestion = new GestionDatos();
+
+	cout << "======= :: Lectura de Archivo :: =======" << endl;
+	oGestion->lecturaDatosDeArchivo();
+	oGestion->imprmirArbol();
+	cout << "Archivo Leido..." << endl;
+	system("pause>0");
+
+	cout << "\n======= :: Intervalo de Nombres [G, L] :: =======" << endl;
+	oGestion->Intervalo_AlumnosNombre();
+	system("pause>0");
+	
+	cout << "\n======= :: NombreApellido en Orden Ascendente :: =======" << endl;
+	oGestion->Mostrar_Nombre_Ascendente(); //Recorrido IN-ORDEN
+	system("pause>0");
+
+	cout << "\n======= :: Mostrar Lista en PreOrden :: =======" << endl;
+	oGestion->GenerarListaPreOrden();	//Recorrido PRE-ORDEN
+	system("pause>0");
+
+	cout << "\n======= :: Buscar CodigoAlumno (Hashing) :: =======" << endl;
+	string key_a_buscar = "202211043";
+	cout << "\nBuscar key: " << key_a_buscar << endl;
+	oGestion->buscar_CodigoAlumno(key_a_buscar);
+	system("pause>0");
+
+
+	if (oGestion != nullptr) delete oGestion;
+
+
+	_getch();
+	return 0;
+}

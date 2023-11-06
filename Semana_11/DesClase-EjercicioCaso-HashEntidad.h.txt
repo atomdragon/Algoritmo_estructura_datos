@@ -1,0 +1,25 @@
+#ifndef __ENTIDADHASH_HPP__
+#define __ENTIDADHASH_HPP__
+
+class HashEntidad {
+private:
+	string key;			//nombre_apellido
+	string codigo;		//value1
+	string sexo;		//value2
+
+
+public:
+	HashEntidad() {}
+	HashEntidad(string _key, string _codigo, string _sexo) {
+		key = _key;
+		codigo = _codigo;
+		sexo = _sexo;
+	}
+	string getKey() { return key; }
+	string getCodigo() { return codigo; }
+	string getSexo() { return sexo; }
+};
+
+
+
+#endif // !__ENTIDADHASH_HPP__
