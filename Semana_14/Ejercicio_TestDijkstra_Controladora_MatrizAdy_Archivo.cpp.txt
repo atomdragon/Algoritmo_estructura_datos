@@ -1,0 +1,39 @@
+#include<conio.h>
+#include "GestionDatos.h"
+
+int main()
+{
+	GestionDatos* oGestion = new GestionDatos();
+
+/*
+	// [OPCION 1]: Datos del Grafo Manuales
+
+	// Generar Datos para el Grafo 
+	oGestion->Grafo_GenerarDatos();
+
+	// Mostrar Datos del Grafo
+	oGestion->Grafo_MostrarDatos();
+
+	// Usar Dijkstra: Camino de costo minimo
+	oGestion->CaminoCostoMinimo(0); // 0: Nodo Inicio
+*/
+
+	
+	// [OPCION 2]: Datos del Grafo Manuales]
+
+	// Generamos la Matriz de Adyacencia desde el Archivo
+	// Cargamos la Matriz en el Grafo
+	oGestion->Grafo_GenerarDatos_MatrizAdyacencia();
+
+	// Mostrar Datos del Grafo
+	cout << endl << endl;
+	oGestion->Grafo_MostrarDatos();
+
+	// Usar Dijkstra: Camino de costo minimo
+	oGestion->CaminoCostoMinimo(0); // 0: Nodo Inicio
+
+	if (oGestion != NULL) delete oGestion;
+
+	_getch();
+	return 0;
+}
