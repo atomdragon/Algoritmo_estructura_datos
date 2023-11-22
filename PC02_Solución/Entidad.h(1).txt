@@ -1,0 +1,32 @@
+#ifndef __ENTIDAD_H__
+#define __ENTIDAD_H__
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Entidad {
+private:
+	string key;			// Code
+	string artista;		// Artista
+	string vistas;		// Total Views
+	string num_videos;	// 100M
+	string avg;			// Avg
+
+public:
+	Entidad() {}
+	Entidad(string _key, string _artist, string _vistas, string _num_videos, string _avg) {
+		key = _key;
+		artista = _artist;
+		vistas = _vistas;
+		num_videos = _num_videos;
+		avg = _avg;
+	}
+	string getKey() { return key; }
+	string getArtista() { return artista; }
+	string getVistas() { return vistas; }
+	string getNumVideos() { return num_videos; }
+	string getAvg() { return avg; }
+};
+
+#endif // !__ENTIDAD_H__

@@ -1,0 +1,95 @@
+#include <iostream>
+#include <conio.h>
+#include "GestionDatos.h"
+
+using namespace std;
+
+void procesarOpcion(short opc, GestionDatos* oGestion)
+{
+	string key_a_buscar;
+
+	switch (opc)
+	{
+	case 1:
+		system("cls");
+		cout << "======= :: Lectura de Archivo :: =======" << endl;
+		oGestion->lecturaDatosDeArchivo();
+		//oGestion->imprmirArbol();
+		cout << "Archivo Leido..." << endl;
+		system("pause>0");
+		break;
+	case 2:
+		system("cls");
+		cout << "======= :: Intervalo de Artistas :: =======" << endl;
+		oGestion->Intervalo_Artistas();
+		system("pause>0");
+		break;
+	case 3:
+		system("cls");
+		cout << "======= :: Artistas en Orden Ascendente :: =======" << endl;
+		oGestion->Mostrar_Artistas(); //Recorrido IN-ORDEN
+		system("pause>0");
+		break;
+	case 4:
+		system("cls");
+		cout << "======= :: Mostrar Lista en PreOrden :: =======" << endl;
+		oGestion->GenerarListaPreOrden();	//Recorrido PRE-ORDEN
+		system("pause>0");
+		break;
+	case 5:
+		system("cls");
+		cout << "======= :: Mostrar Lista en Orden Descendente (Merge Sort) :: =======" << endl;
+		oGestion->OrdenarDescLista();
+		system("pause>0");
+		break;
+	case 6:
+		system("cls");
+		cout << "======= :: Buscar Codigo de Artista(Hashing) :: =======" << endl;
+		key_a_buscar = "202211043";
+		cout << "\nCodigo de Artista: "; cin >> key_a_buscar;
+		oGestion->buscar_CodigoArtista(key_a_buscar);
+		system("pause>0");
+		break;
+	case 7: //Salir
+		cout << "\n\n\n      :: Gracias por usar nuestro software !!! ::" << endl;
+		break;
+	default:
+		cout << "ERROR: Ingrese opcion corrrecta !" << endl;
+	}
+}
+
+short Menu()
+{
+	short opc;
+	system("cls");
+
+	cout << "            MENU PC02" << endl;
+	cout << "\n1. Cargar los Datos del Archivo (Generar Arbol y Generar Tabla Hash)" << endl;
+	cout << "2. Mostrar Intervalo de Artista entre R y S" << endl;
+	cout << "3. Mostrar Artistas en Orden Ascendente" << endl;
+	cout << "4. Generar Lista PreOrden y Mostrar" << endl;
+	cout << "5. Mostrar Lista Ordenada Descendente (Merge Sort) " << endl;
+	cout << "6. Buscar Codigo de Artista (Hashing)" << endl;
+	cout << "7. Salir" << endl;
+	cout << "\nEscoger Opcion: "; cin >> opc;
+
+	return opc;
+}
+
+
+int main() {
+
+	GestionDatos* oGestion = new GestionDatos();
+
+	short opc;
+	do {
+		opc = Menu();
+		procesarOpcion(opc, oGestion);
+	} while (opc != 7);
+
+	if (oGestion != nullptr) delete oGestion;
+
+
+	_getch();
+	return 0;
+}

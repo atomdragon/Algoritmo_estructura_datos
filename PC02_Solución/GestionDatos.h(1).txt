@@ -1,0 +1,254 @@
+#ifndef __GESTION_H__
+#define __GESTION_H__
+
+#include<iostream>
+#include<string>
+#include <fstream>	//Gestion de Archivo
+#include <string>	//getline
+#include <sstream>	//stream
+#include"arbolAVL.h"
+#include"Entidad.h"
+#include "HashTablaAbierto.h"
+
+using namespace std;
+
+void imprimir(string e) {
+	cout << " " << e << endl;
+}
+
+class GestionDatos
+{
+private:
+	ArbolAVL <string, string, bool>* arbol;
+	HashTablaA ht;
+
+	string nombre_archivo;
+
+public:
+	GestionDatos();
+	~GestionDatos();
+
+	void insertarDatos();
+	void imprmirArbol();
+
+	void lecturaDatosDeArchivo();
+	void Intervalo_Artistas();
+	void Mostrar_Artistas();
+	void GenerarListaPreOrden();
+
+	//Ordenamiento MERGE SORT
+	void merge(list<string>* l1, list<string>* l2, list<string>* listaBase, int n);
+	void mergeSort(list<string>* listaBase);
+	void OrdenarDescLista();
+
+	//Hash Table
+	void buscar_CodigoArtista(string _key);
+
+};
+
+GestionDatos::GestionDatos()
+{
+	arbol = new ArbolAVL<string, string, bool>(imprimir);
+	nombre_archivo = "TopYoutubeArtist.csv";
+}
+GestionDatos::~GestionDatos() {}
+
+void GestionDatos::insertarDatos()
+{
+	/*
+	arbol->insertar(15);
+	arbol->insertar(20);
+	arbol->insertar(24);
+	arbol->insertar(10);
+	arbol->insertar(13);
+	arbol->insertar(7);
+	arbol->insertar(30);
+	arbol->insertar(36);
+	arbol->insertar(25);
+	*/
+}
+
+void GestionDatos::imprmirArbol()
+{
+	arbol->imprimeArbol();
+}
+
+void GestionDatos::lecturaDatosDeArchivo()
+{
+	/*
+	* 1_ Lee Archivo .csv
+	* 2_ Inserta en Nodo de Arbol
+	*/
+
+	ifstream archIN;
+	archIN.open(nombre_archivo, ios::in); //Apertura
+
+	if (!archIN.is_open())
+	{
+		cout << "Error: No se pudo abrir el archivo !!!" << endl;
+		exit(1);
+	}
+
+	string linea;
+	char delimitador = '|';
+
+	// Encabezado: Leemos la primer l nea para descartarla, pues es el encabezado
+	getline(archIN, linea);
+
+	// Contenido: Leemos todas las l neas
+	while (getline(archIN, linea))
+	{
+		stringstream stream(linea); // Convertir la cadena a un stream
+
+		string col1, col2, col3, col4, col5;
+		// Extraer todos los valores de esa fila [considerando 3 columans]
+		getline(stream, col1, delimitador);
+		getline(stream, col2, delimitador);
+		getline(stream, col3, delimitador);
+		getline(stream, col4, delimitador);
+		getline(stream, col5, delimitador);
+
+		/*
+		// Imprimir
+		cout << "==================" << endl;
+		cout << "Columna 1: " << col1;
+		cout << ", Columna 2: " << col2;
+		cout << ", Columna 3: " << col3;
+		cout << endl;
+		*/
+
+		//ARBOL: Nodo tendra  como elemento la columna 2
+		arbol->insertar(col2); //Artist
+
+		//HASH
+		//Considerando (key, value) = (code, values)
+		ht.insert(Entidad(col1, col2, col3, col4, col5));
+	}
+
+	archIN.close();
+}
+
+void GestionDatos::Intervalo_Artistas()
+{
+	arbol->Intervalo_Artistas("R", "T");
+}
+
+void GestionDatos::Mostrar_Artistas()
+{
+	arbol->inOrden();
+}
+
+void GestionDatos::GenerarListaPreOrden()
+{
+	arbol->preOrdenToLista();
+
+	list<string>* lista = arbol->getLista();
+	for (auto x : *lista) {
+		cout << x << endl;
+	}
+}
+
+void GestionDatos::merge(list<string>* l1, list<string>* l2, list<string>* listaBase, int n)
+{
+	int i, j, k;
+	i = j = k = 0;
+
+	while (i < n / 2 && j < n - n / 2) {
+		list<string>::iterator it1 = l1->begin();
+		advance(it1, i);
+		list<string>::iterator it2 = l2->begin();
+		advance(it2, j);
+		if (*it1 > *it2)	//Orden Descendente
+		{
+			list<string>::iterator it = listaBase->begin();
+			advance(it, k);
+			*it = *it1;
+			i++; k++;
+		}
+		else
+		{
+			list<string>::iterator it = listaBase->begin();
+			advance(it, k);
+			*it = *it2;
+			j++; k++;
+		}
+	}
+	while (i < n / 2) {
+		list<string>::iterator it1 = l1->begin();
+		advance(it1, i);
+		list<string>::iterator it = listaBase->begin();
+		advance(it, k);
+		*it = *it1;
+		i++; k++;
+	}
+	while (j < n - n / 2) {
+		list<string>::iterator it2 = l2->begin();
+		advance(it2, j);
+		list<string>::iterator it = listaBase->begin();
+		advance(it, k);
+		*it = *it2;
+		j++; k++;
+	}
+}
+
+void GestionDatos::mergeSort(list<string>* listaBase)
+{
+	int n = listaBase->size();
+	if (n > 1) {
+		int mitad = n / 2;
+		list<string>* l1 = new list<string>();
+		list<string>* l2 = new list<string>();
+
+		//Llenamos la Lista de la Izquierda (l1)
+		int ind = 0;
+		while (ind < mitad)
+		{
+			list<string>::iterator it = listaBase->begin();
+			advance(it, ind);	// iterator to point to "ind" position
+			l1->push_back(*it);	// llenamos la Lista l1
+			++ind;
+		}
+		//Llenamos la Lista de la Derecha (l2)
+		//ind = mitad;
+		while (ind < n)
+		{
+			list<string>::iterator it = listaBase->begin();
+			advance(it, ind);	// iterator to point to "ind" position
+			l2->push_back(*it);	// llenamos la Lista l2
+			++ind;
+		}
+		/*
+		For TEST:
+				cout << "Lista 1" << endl;
+				//for (auto x : *l1) {
+				for (auto it = l1->begin(); it != l1->end(); ++it){
+					cout << *it << endl;
+				}
+				cout << "\nLista 2" << endl;
+				//for (auto x : *l2) {
+				for (auto it = l2->begin(); it != l2->end(); ++it){
+					cout << *it << endl;
+				}
+		*/
+		mergeSort(l1);
+		mergeSort(l2);
+		merge(l1, l2, listaBase, n);
+	}
+}
+
+void GestionDatos::OrdenarDescLista()
+{
+	list<string>* lista = arbol->getLista();
+	mergeSort(lista);
+	//Imprimir Lista
+	for (auto x : *lista) {
+		cout << x << endl;
+	}
+}
+
+void GestionDatos::buscar_CodigoArtista(string _key)
+{
+	ht.buscar(_key);
+}
+
+#endif // __GESTION_H__

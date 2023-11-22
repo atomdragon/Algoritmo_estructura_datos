@@ -1,0 +1,238 @@
+#ifndef __ARBOLAVL_H__
+#define __ARBOLAVL_H__
+
+#include "nodoAVL.h"
+#include <algorithm>
+#include <functional>
+#include <list>
+#include <string>
+
+using namespace std;
+
+template<class T, class S, class B>
+class ArbolAVL {
+private:
+	Nodo<T>* raiz;
+	void(*procesar)(T); //puntero a función
+	typedef function<int(T, T)> Comp; //Lambda
+	Comp comparar; // lambda de criterio de comparación
+
+	list<string>* lista; // Para el recorrido en PRE-ORDEN
+
+	//Operaciones privadas
+	int _altura(Nodo<T>* nodo) {
+		int h = 0;
+		if (nodo != NULL) {
+			int hizq = _altura(nodo->izq);
+			int hder = _altura(nodo->der);
+			int max_h = max(hizq, hder);
+			h = max_h + 1;
+		}
+		return h;
+	}
+
+	void _rotarDerecha(Nodo<T>*& nodo) { // [RSD] [Alt_der < Alt_izq] 
+		//->cout << "\tRotar Derecha [ini]" << nodo->elemento << endl;
+		Nodo<T>* p = nodo->izq;
+		nodo->izq = p->der;
+		p->der = nodo;
+		nodo = p;
+		//->cout << "\tRotar Derecha [fin]" << nodo->elemento << endl;
+	}
+	/*
+	[RSD]
+
+		A
+	  B      =>       B
+	C               C   A
+
+	nodo <- A
+	p <- B
+
+	*/
+
+	void _rotarIzquierda(Nodo<T>*& nodo) { // [RSI] [Alt_der > Alt_izq] 
+		//->cout << "\tRotar Izquierda [ini]" << nodo->elemento << endl;
+		Nodo<T>* p = nodo->der;
+		nodo->der = p->izq;
+		p->izq = nodo;
+		nodo = p;
+		//->cout << "\tRotar Izquierda [fin]" << nodo->elemento << endl;
+	}
+	/*
+	[RSI]
+
+	A
+	  B      =>       B
+		C           A   C
+
+	nodo <- A
+	p <- B
+
+	*/
+
+	void _balanceo(Nodo<T>*& nodo) {
+		//->cout << "\tBalanceo [ini]: " << nodo->elemento << endl;
+		int hizq = _altura(nodo->izq);
+		int hder = _altura(nodo->der);
+		int fb = hder - hizq;
+		//int fb = hizq - hder; [Opcion2]
+		//->cout << "\tFactor: " << fb << endl;
+
+		//[Opcion2]if (fb < -1) { //rotar a la izq [hizq < hder]
+		if (fb > 1) { //rotar a la izq [hizq < hder]
+			int hhizq = _altura(nodo->der->izq);
+			int hhder = _altura(nodo->der->der);
+			if (hhizq > hhder) { //verificar si aplica doble rotación RDI
+				_rotarDerecha(nodo->der);	// RSD
+			}
+			_rotarIzquierda(nodo);	// RSI
+		}
+		//[Opcion2]else if (fb > 1) { //rotar a la der [hizq > hder]
+		else if (fb < -1) { //rotar a la der [hizq > hder]
+			int hhizq = _altura(nodo->izq->izq);
+			int hhder = _altura(nodo->izq->der);
+			if (hhizq < hhder) { //verificar si aplica doble rotación RDD
+				_rotarIzquierda(nodo->izq);	// RSI
+			}
+			_rotarDerecha(nodo);	// RSD
+		}
+		//->cout << "\tBalanceo [fin] " << nodo->elemento << endl;
+	}
+
+	bool _insertar(Nodo<T>*& nodo, T e) {
+		//->cout << "\tInsertar [ini]" << e << endl;
+		if (nodo == nullptr) { //Nuevo elemento
+			nodo = new Nodo<T>();
+			nodo->elemento = e;
+			return true;
+		}
+		else if (e == nodo->elemento) {
+			return false;
+		}
+		else if (e < nodo->elemento) {
+			_insertar(nodo->izq, e);
+		}
+		else if (e > nodo->elemento) {
+			_insertar(nodo->der, e);
+		}
+
+		_balanceo(nodo);
+
+		//->cout << "\tInsertar [fin]" << e << endl;
+		return true;
+	}
+
+	void _inOrden(Nodo<T>* nodo) {
+		if (nodo == nullptr) return;
+		_inOrden(nodo->izq);
+		procesar(nodo->elemento);
+		_inOrden(nodo->der);
+	}
+	void _inOrdenH(Nodo<T>* nodo) {
+		if (nodo == nullptr) return;
+		_inOrdenH(nodo->izq);
+		//procesar(nodo->altura);
+		procesar(_altura(nodo));
+		_inOrdenH(nodo->der);
+	}
+	void _preOrden(Nodo<T>* nodo) {	//Raiz => Izq => Der
+		if (nodo == nullptr) return;
+		procesar(nodo->elemento);
+		_preOrden(nodo->izq);
+		_preOrden(nodo->der);
+	}
+	void _preOrdenToLista(Nodo<T>* nodo) {	//Raiz => Izq => Der
+		if (nodo == nullptr) return;
+		//procesar(nodo->elemento);
+		lista->push_back(nodo->elemento);
+		_preOrdenToLista(nodo->izq);
+		_preOrdenToLista(nodo->der);
+	}
+	void _postOrden(Nodo<T>* nodo) {	//Izq => Der => Raiz
+		if (nodo == nullptr) return;
+		_postOrden(nodo->izq);
+		_postOrden(nodo->der);
+		procesar(nodo->elemento);
+	}
+
+	void _imprimeArbol(Nodo<T>* nodo, S indent, B last) {
+		if (nodo != nullptr) {
+			cout << indent;
+			if (last) {
+				cout << "R----";
+				indent += "   ";
+			}
+			else {
+				cout << "L----";
+				indent += "|  ";
+			}
+			cout << nodo->elemento << endl;
+			_imprimeArbol(nodo->izq, indent, false);
+			_imprimeArbol(nodo->der, indent, true);
+		}
+	}
+
+	bool _Intervalo_Artistas(Nodo<T>* nodo, T min, T max) {
+		if (nodo == nullptr) return false;
+		else {
+			//if (min < nodo->elemento)
+			if (comparar(min, nodo->elemento) < 0)
+				_Intervalo_Artistas(nodo->izq, min, max);
+			if (min <= nodo->elemento && nodo->elemento <= max)
+				cout << nodo->elemento << "\n";
+			//if (max > nodo->elemento)
+			if (comparar(max, nodo->elemento) > 0)
+				_Intervalo_Artistas(nodo->der, min, max);
+		}
+	}
+
+public:
+	ArbolAVL(void(*nuevaFuncion)(T)) {
+		this->procesar = nuevaFuncion;
+		this->raiz = nullptr;
+
+		this->comparar = [](string a, string b)->int {
+			return a.compare(b);	//==0: Iguales, <0: a<b, >0: a>b
+		};
+
+		lista = new list<string>();
+	}
+
+	bool insertar(T e) {
+		return _insertar(raiz, e);
+	}
+
+	void inOrden() {
+		_inOrden(raiz);
+	}
+	void inOrdenH() {
+		_inOrdenH(raiz);
+	}
+
+	void preOrden() {
+		_preOrden(raiz);
+	}
+	void postOrden() {
+		_postOrden(raiz);
+	}
+
+	void imprimeArbol() {
+		_imprimeArbol(raiz, "", true);
+	}
+
+	void Intervalo_Artistas(T min, T max) {
+		_Intervalo_Artistas(raiz, min, max);
+	}
+
+	void preOrdenToLista() {
+		_preOrdenToLista(raiz);
+	}
+
+	list<string>* getLista() {
+		return lista;
+	}
+
+
+};
+#endif // !__ARBOLAVL_H__
