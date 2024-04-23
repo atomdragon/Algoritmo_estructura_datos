@@ -1,0 +1,22 @@
+#include <iostream>
+using namespace std;
+#include "Bubble_Sort.h"
+
+
+int main() {
+	srand(time(nullptr));
+
+	int n = 10;
+	int* v = new int[n];
+
+	for (int i = 0; i < n; i++)
+	{
+		v[i] = rand() % 100; cout << " " << v[i];
+	}
+
+	cout << endl;
+
+	Ordenamiento_intercambio(v, n);
+	print(v, n);
+	return 0;
+}
