@@ -1,3 +1,8 @@
+#include <iostream>
+
+using namespace std;
+
+int main() {
 	srand(time(nullptr));
 	const char* barajas[] = {"A","B","C","D","E"};
 	int n = 5;
@@ -10,3 +15,6 @@
 	}
 
 	int x = 0;
+
+	return 0;
+}
